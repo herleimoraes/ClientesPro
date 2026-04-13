@@ -116,6 +116,7 @@
             align-items: center;
             gap: 15px;
             transition: background-color 0.3s ease;
+            cursor: pointer;
         }
 
         .client-avatar {
@@ -301,30 +302,84 @@
             <form id="clientForm" class="bg-body p-4 rounded-4 shadow-sm">
                 <input type="hidden" id="clientId">
                 
+                <!-- SEÇÃO 1: DADOS PRINCIPAIS -->
+                <h6 class="text-success fw-bold mb-3 border-bottom pb-2">Dados Principais</h6>
+                
                 <div class="mb-3">
                     <label for="clientName" class="form-label text-muted small fw-bold">Nome Completo *</label>
                     <input type="text" class="form-control form-control-lg" id="clientName" placeholder="Ex: João da Silva" required>
                 </div>
-                
-                <div class="mb-3">
-                    <label for="clientPhone" class="form-label text-muted small fw-bold">Telefone/WhatsApp *</label>
-                    <input type="tel" class="form-control form-control-lg" id="clientPhone" placeholder="(00) 00000-0000" required>
-                </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label for="clientDoc" class="form-label text-muted small fw-bold">CPF / CNPJ (opcional)</label>
                     <input type="text" class="form-control form-control-lg" id="clientDoc" placeholder="000.000.000-00" maxlength="18">
                 </div>
                 
-                <div class="mb-3">
-                    <label for="clientEmail" class="form-label text-muted small fw-bold">E-mail (opcional)</label>
-                    <input type="email" class="form-control form-control-lg" id="clientEmail" placeholder="joao@email.com">
+                <!-- SEÇÃO 2: CONTATO E ENDEREÇO -->
+                <h6 class="text-success fw-bold mt-4 mb-3 border-bottom pb-2">Contato e Endereço</h6>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label for="clientPhone" class="form-label text-muted small fw-bold">Telefone/WhatsApp *</label>
+                        <input type="tel" class="form-control form-control-lg" id="clientPhone" placeholder="(00) 00000-0000" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="clientEmail" class="form-label text-muted small fw-bold">E-mail (opcional)</label>
+                        <input type="email" class="form-control form-control-lg" id="clientEmail" placeholder="joao@email.com">
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="clientAddress" class="form-label text-muted small fw-bold">Endereço (opcional)</label>
-                    <input type="text" class="form-control form-control-lg" id="clientAddress" placeholder="Rua, Número, Cidade">
+                    <label for="clientCep" class="form-label text-muted small fw-bold">CEP</label>
+                    <input type="text" class="form-control form-control-lg" id="clientCep" placeholder="00000-000" maxlength="9">
                 </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-8">
+                        <label for="clientStreet" class="form-label text-muted small fw-bold">Logradouro (Rua, Av.)</label>
+                        <input type="text" class="form-control form-control-lg" id="clientStreet" placeholder="Ex: Rua das Flores">
+                    </div>
+                    <div class="col-4">
+                        <label for="clientNumber" class="form-label text-muted small fw-bold">Número</label>
+                        <input type="text" class="form-control form-control-lg" id="clientNumber" placeholder="Ex: 123">
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label for="clientComplement" class="form-label text-muted small fw-bold">Complemento</label>
+                        <input type="text" class="form-control form-control-lg" id="clientComplement" placeholder="Ex: Apto 42, Bloco B">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="clientNeighborhood" class="form-label text-muted small fw-bold">Bairro</label>
+                        <input type="text" class="form-control form-control-lg" id="clientNeighborhood" placeholder="Ex: Centro">
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-4">
+                    <div class="col-8">
+                        <label for="clientCity" class="form-label text-muted small fw-bold">Cidade</label>
+                        <input type="text" class="form-control form-control-lg" id="clientCity" placeholder="Ex: São Paulo">
+                    </div>
+                    <div class="col-4">
+                        <label for="clientState" class="form-label text-muted small fw-bold">UF</label>
+                        <select class="form-control form-control-lg" id="clientState">
+                            <option value="">--</option>
+                            <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                            <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                            <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                            <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                            <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                            <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                            <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                            <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                            <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 3: OUTRAS INFORMAÇÕES -->
+                <h6 class="text-success fw-bold mt-4 mb-3 border-bottom pb-2">Outras Informações</h6>
 
                 <div class="mb-4">
                     <label for="clientNotes" class="form-label text-muted small fw-bold">Observações (opcional)</label>
@@ -340,6 +395,49 @@
                     </button>
                 </div>
             </form>
+        </section>
+
+        <!-- VISUALIZAÇÃO: DETALHES DO CLIENTE -->
+        <section id="view-details" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                <h5 class="m-0 fw-bold text-body">Detalhes do Cliente</h5>
+                <button type="button" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 shadow-sm" onclick="switchView('view-list')">
+                    <i class="bi bi-arrow-left me-1"></i> Voltar
+                </button>
+            </div>
+
+            <div class="bg-body p-4 rounded-4 shadow-sm mb-3 text-center">
+                <div class="client-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;" id="detailAvatar">
+                    --
+                </div>
+                <h4 class="fw-bold mb-1 text-body" id="detailName">Nome do Cliente</h4>
+                <p class="text-muted mb-3" id="detailDoc">CPF/CNPJ</p>
+                <button class="btn btn-outline-success btn-sm rounded-pill px-4" id="btnEditDetail">
+                    <i class="bi bi-pencil me-1"></i> Editar
+                </button>
+            </div>
+
+            <div class="bg-body p-4 rounded-4 shadow-sm">
+                <h6 class="text-success fw-bold mb-3 border-bottom pb-2">Contato e Endereço</h6>
+                <div class="mb-3">
+                    <small class="text-muted fw-bold d-block">Telefone/WhatsApp</small>
+                    <span id="detailPhone" class="text-body">--</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted fw-bold d-block">E-mail</small>
+                    <span id="detailEmail" class="text-body">--</span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted fw-bold d-block">Endereço Completo</small>
+                    <span id="detailAddress" class="text-body">--</span>
+                </div>
+
+                <h6 class="text-success fw-bold mt-4 mb-3 border-bottom pb-2">Outras Informações</h6>
+                <div>
+                    <small class="text-muted fw-bold d-block">Observações</small>
+                    <span id="detailNotes" class="text-body">--</span>
+                </div>
+            </div>
         </section>
 
         <!-- VISUALIZAÇÃO: CONFIGURAÇÕES -->
@@ -377,7 +475,7 @@
             
             <div class="text-center mt-4">
                 <!-- ID Adicionado para controle dinâmico da versão -->
-                <small class="text-muted" id="appVersionDisplay">Carregando versão...</small>
+                <small class="text-muted" id="appVersionDisplay">A carregar versão...</small>
             </div>
         </section>
 
@@ -438,7 +536,7 @@
     <!-- Lógica do Aplicativo -->
     <script>
         // --- CONFIGURAÇÕES DO APP ---
-        const APP_VERSION = '1.1.0'; // Altere a versão aqui centralmente
+        const APP_VERSION = '1.1.0'; // Versão de recurso (Fallback)
 
         // --- ESTADO DA APLICAÇÃO ---
         let clients = JSON.parse(localStorage.getItem('app_clientes'));
@@ -451,7 +549,13 @@
                     phone: '(11) 98765-4321',
                     email: 'ana.silva@email.com',
                     doc: '123.456.789-00',
-                    address: 'Av. Paulista, 1000 - São Paulo, SP',
+                    cep: '01310-100',
+                    street: 'Av. Paulista',
+                    number: '1000',
+                    complement: 'Apto 54',
+                    neighborhood: 'Bela Vista',
+                    city: 'São Paulo',
+                    state: 'SP',
                     notes: 'Cliente VIP desde 2025.'
                 },
                 {
@@ -460,7 +564,13 @@
                     phone: '(31) 3222-4444',
                     email: 'contato@techsolutions.com.br',
                     doc: '12.345.678/0001-90',
-                    address: 'Rua da Inovação, 50 - Uberlândia, MG',
+                    cep: '38400-000',
+                    street: 'Rua da Inovação',
+                    number: '50',
+                    complement: 'Sala 101',
+                    neighborhood: 'Centro',
+                    city: 'Uberlândia',
+                    state: 'MG',
                     notes: 'Faturamento para o dia 15.'
                 },
                 {
@@ -469,7 +579,7 @@
                     phone: '(21) 97777-8888',
                     email: '',
                     doc: '987.654.321-99',
-                    address: '',
+                    cep: '', street: '', number: '', complement: '', neighborhood: '', city: '', state: '',
                     notes: 'Prefere contato via WhatsApp.'
                 }
             ];
@@ -485,6 +595,7 @@
         const clientCount = document.getElementById('clientCount');
         const dashTotalClients = document.getElementById('dashTotalClients');
         const phoneInput = document.getElementById('clientPhone');
+        const cepInput = document.getElementById('clientCep'); // Novo campo de CEP
         const darkModeToggle = document.getElementById('darkModeToggle');
         
         // Instâncias do Bootstrap
@@ -496,6 +607,7 @@
             renderClients();
             setupPhoneMask();
             setupDocMask();
+            setupCepMask(); // Inicializa a máscara do CEP
             setupTheme();
             loadAppVersion(); // Chama a função para carregar a versão dinâmica
         });
@@ -504,24 +616,20 @@
         async function loadAppVersion() {
             const versionDisplay = document.getElementById('appVersionDisplay');
             
-            // Método 1 (Ativo): Usando a constante local no topo do arquivo.
-            // Para atualizar, basta mudar a const APP_VERSION.
-            versionDisplay.innerText = `Versão ${APP_VERSION}`;
-
-            // Método 2 (Para uso com GitHub Actions / CI-CD futuramente):
-            /*
             try {
-                // Ao criar um arquivo "version.json" na raiz com { "version": "1.2.0" }
-                // você pode buscar essa informação sem editar o HTML estático.
+                // Tenta buscar a versão do ficheiro version.json (ideal para GitHub Pages/Actions)
                 const response = await fetch('./version.json');
                 if (response.ok) {
                     const data = await response.json();
                     versionDisplay.innerText = `Versão ${data.version}`;
+                    return; // Sai da função se der certo
                 }
             } catch (error) {
-                console.error('Erro ao buscar versão do arquivo externo:', error);
+                console.warn('Ficheiro version.json não encontrado ou erro na requisição. A utilizar a versão local de recurso.', error);
             }
-            */
+
+            // Fallback: Usa a constante local se o ficheiro falhar (ex: a testar localmente sem servidor)
+            versionDisplay.innerText = `Versão ${APP_VERSION}`;
         }
 
         // --- SISTEMA DE THEMA (DARK/LIGHT MODE) ---
@@ -557,9 +665,9 @@
             if(viewId === 'view-dashboard') {
                 document.getElementById('nav-dashboard').classList.add('active');
                 renderClients();
-            } else if(viewId === 'view-list') {
+            } else if(viewId === 'view-list' || viewId === 'view-details') {
                 document.getElementById('nav-list').classList.add('active');
-                renderClients();
+                if(viewId === 'view-list') renderClients();
             } else if(viewId === 'view-form') {
                 // Ao abrir formulário, não mantemos aba ativa no menu inferior
                 if(isNew) {
@@ -599,6 +707,15 @@
             });
         }
 
+        function setupCepMask() {
+            if(!cepInput) return;
+            cepInput.addEventListener('input', function (e) {
+                let v = e.target.value.replace(/\D/g, '');
+                v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+                e.target.value = v;
+            });
+        }
+
         // --- GERAR INICIAIS PARA AVATAR ---
         function getInitials(name) {
             const names = name.trim().split(' ');
@@ -630,6 +747,7 @@
             sortedClients.forEach(client => {
                 const card = document.createElement('div');
                 card.className = 'client-card text-body';
+                card.onclick = () => viewClient(client.id); // Adiciona evento de clique no card
                 card.innerHTML = `
                     <div class="client-avatar">
                         ${getInitials(client.name)}
@@ -640,18 +758,18 @@
                         ${client.doc ? `<p class="mb-0 text-muted" style="font-size: 0.75rem;"><i class="bi bi-card-heading me-1"></i>${client.doc}</p>` : ''}
                     </div>
                     <div class="client-actions dropdown">
-                        <button class="btn btn-light btn-sm text-secondary bg-transparent border-0" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-light btn-sm text-secondary bg-transparent border-0" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation()">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border border-secondary-subtle">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border border-secondary-subtle" onclick="event.stopPropagation()">
                             <li>
-                                <a class="dropdown-item py-2" href="#" onclick="editClient('${client.id}')">
+                                <a class="dropdown-item py-2" href="#" onclick="event.preventDefault(); editClient('${client.id}')">
                                     <i class="bi bi-pencil me-2 text-success"></i> Editar
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item py-2 text-danger" href="#" onclick="prepareDelete('${client.id}')">
+                                <a class="dropdown-item py-2 text-danger" href="#" onclick="event.preventDefault(); prepareDelete('${client.id}')">
                                     <i class="bi bi-trash me-2"></i> Excluir
                                 </a>
                             </li>
@@ -660,6 +778,35 @@
                 `;
                 listContainer.appendChild(card);
             });
+        }
+
+        // --- VISUALIZAR CLIENTE (Detalhes) ---
+        function viewClient(id) {
+            const client = clients.find(c => c.id === id);
+            if(client) {
+                document.getElementById('detailAvatar').innerText = getInitials(client.name);
+                document.getElementById('detailName').innerText = client.name;
+                document.getElementById('detailDoc').innerText = client.doc || 'Nenhum documento registado';
+                document.getElementById('detailPhone').innerText = client.phone || '--';
+                document.getElementById('detailEmail').innerText = client.email || '--';
+
+                // Formatar endereço
+                let addressParts = [];
+                if (client.street) addressParts.push(client.street);
+                if (client.number) addressParts.push(client.number);
+                if (client.complement) addressParts.push(client.complement);
+                if (client.neighborhood) addressParts.push(client.neighborhood);
+                if (client.city) addressParts.push(client.city);
+                if (client.state) addressParts.push(client.state);
+                if (client.cep) addressParts.push(`CEP: ${client.cep}`);
+                
+                document.getElementById('detailAddress').innerText = addressParts.length > 0 ? addressParts.join(', ') : 'Nenhum endereço registado.';
+                document.getElementById('detailNotes').innerText = client.notes || 'Nenhuma observação.';
+
+                document.getElementById('btnEditDetail').onclick = () => editClient(id);
+
+                switchView('view-details');
+            }
         }
 
         // --- SALVAR/ATUALIZAR CLIENTE ---
@@ -671,24 +818,28 @@
             const phone = document.getElementById('clientPhone').value;
             const email = document.getElementById('clientEmail').value;
             const doc = document.getElementById('clientDoc').value;
-            const address = document.getElementById('clientAddress').value;
+            
+            // Novos campos de endereço completos
+            const cep = document.getElementById('clientCep').value;
+            const street = document.getElementById('clientStreet').value;
+            const number = document.getElementById('clientNumber').value;
+            const complement = document.getElementById('clientComplement').value;
+            const neighborhood = document.getElementById('clientNeighborhood').value;
+            const city = document.getElementById('clientCity').value;
+            const state = document.getElementById('clientState').value;
+            
             const notes = document.getElementById('clientNotes').value;
 
             if(id) {
                 const index = clients.findIndex(c => c.id === id);
                 if(index !== -1) {
-                    clients[index] = { id, name, phone, email, doc, address, notes };
+                    clients[index] = { id, name, phone, email, doc, cep, street, number, complement, neighborhood, city, state, notes };
                     showToast('Cliente atualizado com sucesso!', 'bg-success');
                 }
             } else {
                 const newClient = {
                     id: Date.now().toString(),
-                    name,
-                    phone,
-                    email,
-                    doc,
-                    address,
-                    notes
+                    name, phone, email, doc, cep, street, number, complement, neighborhood, city, state, notes
                 };
                 clients.push(newClient);
                 showToast('Cliente cadastrado com sucesso!', 'bg-success');
@@ -707,7 +858,16 @@
                 document.getElementById('clientPhone').value = client.phone;
                 document.getElementById('clientEmail').value = client.email || '';
                 document.getElementById('clientDoc').value = client.doc || '';
-                document.getElementById('clientAddress').value = client.address || '';
+                
+                // Povoar campos de endereço
+                document.getElementById('clientCep').value = client.cep || '';
+                document.getElementById('clientStreet').value = client.street || '';
+                document.getElementById('clientNumber').value = client.number || '';
+                document.getElementById('clientComplement').value = client.complement || '';
+                document.getElementById('clientNeighborhood').value = client.neighborhood || '';
+                document.getElementById('clientCity').value = client.city || '';
+                document.getElementById('clientState').value = client.state || '';
+                
                 document.getElementById('clientNotes').value = client.notes || '';
                 
                 document.getElementById('formTitle').innerText = 'Editar Cliente';
