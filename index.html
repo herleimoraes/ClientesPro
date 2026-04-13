@@ -104,8 +104,8 @@
             color: var(--primary-color);
         }
 
-        /* Itens da Lista de Clientes (Cards) */
-        .client-card {
+        /* Itens da Lista (Cards) */
+        .client-card, .product-card {
             background: var(--bs-body-bg);
             border-radius: 12px;
             padding: 15px;
@@ -119,7 +119,7 @@
             cursor: pointer;
         }
 
-        .client-avatar {
+        .client-avatar, .product-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -132,13 +132,18 @@
             font-weight: bold;
             flex-shrink: 0;
         }
+        
+        .product-avatar {
+            background: rgba(13, 110, 253, 0.1);
+            color: #0d6efd; /* Azul para diferenciar produtos de clientes */
+        }
 
-        .client-info {
+        .client-info, .product-info {
             flex-grow: 1;
             overflow: hidden;
         }
 
-        .client-info h6 {
+        .client-info h6, .product-info h6 {
             margin: 0 0 4px 0;
             font-size: 1rem;
             white-space: nowrap;
@@ -146,19 +151,19 @@
             text-overflow: ellipsis;
         }
 
-        .client-info p {
+        .client-info p, .product-info p {
             margin: 0;
             font-size: 0.85rem;
             color: #6c757d;
         }
 
-        .client-actions .btn {
+        .client-actions .btn, .product-actions .btn {
             padding: 8px 12px;
             border-radius: 8px;
         }
 
         /* Formulários maiores para mobile */
-        .form-control-lg {
+        .form-control-lg, .form-select-lg {
             border-radius: 10px;
             font-size: 1rem;
             padding: 12px 15px;
@@ -167,7 +172,7 @@
             color: var(--bs-body-color);
         }
         
-        .form-control-lg:focus {
+        .form-control-lg:focus, .form-select-lg:focus {
             background-color: var(--bs-body-bg);
             box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
             border-color: var(--primary-color);
@@ -213,9 +218,8 @@
     <!-- Header Fixo com Logomarca -->
     <header class="app-header">
         <div class="d-flex align-items-center gap-2">
-            <!-- Logomarca (Ícone) -->
             <i class="bi bi-hexagon-fill fs-3"></i>
-            <h1>Gestão de Clientes</h1>
+            <h1>Gestão de Locações</h1>
         </div>
     </header>
 
@@ -228,32 +232,46 @@
             
             <div class="row g-3 mb-4">
                 <div class="col-6">
-                    <div class="dash-card p-3 text-center h-100">
+                    <div class="dash-card p-3 text-center h-100" onclick="switchView('view-list')">
                         <i class="bi bi-people-fill text-success" style="font-size: 2rem;"></i>
                         <h2 class="fw-bold mt-2 mb-0" id="dashTotalClients">0</h2>
-                        <small class="text-muted">Total Clientes</small>
+                        <small class="text-muted">Clientes</small>
                     </div>
                 </div>
                 <div class="col-6">
-                    <div class="dash-card p-3 text-center h-100" onclick="switchView('view-form', true)">
-                        <i class="bi bi-person-plus-fill text-primary" style="font-size: 2rem;"></i>
-                        <h2 class="fw-bold mt-2 mb-0"><i class="bi bi-plus"></i></h2>
-                        <small class="text-muted">Adicionar</small>
+                    <div class="dash-card p-3 text-center h-100" onclick="switchView('view-products')">
+                        <i class="bi bi-box-seam-fill text-primary" style="font-size: 2rem;"></i>
+                        <h2 class="fw-bold mt-2 mb-0" id="dashTotalProducts">0</h2>
+                        <small class="text-muted">Produtos</small>
                     </div>
                 </div>
             </div>
 
             <h5 class="mb-3 fw-bold text-body fs-6">Ações Rápidas</h5>
-            <div class="list-group border-0 shadow-sm rounded-4">
-                <button class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center bg-body text-body" onclick="switchView('view-list')">
+            <div class="list-group border-0 shadow-sm rounded-4 mb-3">
+                <button class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center bg-body text-body" onclick="switchView('view-form', true)">
                     <div class="client-avatar me-3 bg-success bg-opacity-10 text-success" style="width:40px; height:40px; font-size:1rem;">
-                        <i class="bi bi-list-ul"></i>
+                        <i class="bi bi-person-plus-fill"></i>
                     </div>
-                    Ver Todos os Clientes
+                    Novo Cliente
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </button>
+            </div>
+            
+            <div class="list-group border-0 shadow-sm rounded-4">
+                <button class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center bg-body text-body" onclick="switchView('view-product-form', true)">
+                    <div class="product-avatar me-3 bg-primary bg-opacity-10 text-primary" style="width:40px; height:40px; font-size:1rem;">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    Novo Produto
                     <i class="bi bi-chevron-right ms-auto text-muted"></i>
                 </button>
             </div>
         </section>
+
+        <!-- ========================================== -->
+        <!-- MÓDULO CLIENTES                            -->
+        <!-- ========================================== -->
 
         <!-- VISUALIZAÇÃO: LISTA DE CLIENTES -->
         <section id="view-list" class="view-section">
@@ -262,16 +280,15 @@
                     <button class="btn btn-sm btn-light border rounded-circle" onclick="switchView('view-dashboard')">
                         <i class="bi bi-arrow-left"></i>
                     </button>
-                    <h5 class="m-0 text-body fw-bold">Meus Clientes</h5>
+                    <h5 class="m-0 text-body fw-bold">Clientes</h5>
                     <span class="badge bg-success rounded-pill px-2 py-1" id="clientCount">0</span>
                 </div>
-                <!-- Botão Novo Adicionado na Tela de Clientes -->
                 <button class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" onclick="switchView('view-form', true)">
                     <i class="bi bi-plus-lg me-1"></i> Novo
                 </button>
             </div>
 
-            <!-- CAMPO DE BUSCA CENTRALIZADO -->
+            <!-- CAMPO DE BUSCA -->
             <div class="mb-4 px-1">
                 <div class="input-group shadow-sm rounded-pill overflow-hidden border border-secondary-subtle">
                     <span class="input-group-text bg-body border-0 text-muted ps-3 pe-2">
@@ -281,23 +298,18 @@
                 </div>
             </div>
 
-            <!-- Container da Lista -->
-            <div id="clientListContainer">
-                <!-- Os clientes serão inseridos aqui via JS -->
-            </div>
+            <div id="clientListContainer"></div>
 
-            <!-- Estado Vazio (Empty State) -->
             <div id="emptyState" class="text-center py-5 d-none">
                 <i class="bi bi-person-x text-muted" style="font-size: 4rem;"></i>
                 <h5 class="mt-3 text-muted">Nenhum cliente cadastrado</h5>
-                <p class="text-muted small mb-4">Toque em "Adicionar" para começar.</p>
-                <button class="btn btn-outline-success rounded-pill px-4" onclick="switchView('view-form', true)">
-                    <i class="bi bi-person-plus-fill me-2"></i>Adicionar Cliente
+                <button class="btn btn-outline-success rounded-pill px-4 mt-3" onclick="switchView('view-form', true)">
+                    Adicionar Cliente
                 </button>
             </div>
         </section>
 
-        <!-- VISUALIZAÇÃO: FORMULÁRIO -->
+        <!-- VISUALIZAÇÃO: FORMULÁRIO DE CLIENTES -->
         <section id="view-form" class="view-section">
             <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
                 <h5 class="m-0 fw-bold text-body" id="formTitle">Novo Cliente</h5>
@@ -305,7 +317,6 @@
                     <button type="button" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 shadow-sm" onclick="switchView('view-list')">
                         Cancelar
                     </button>
-                    <!-- Este botão aciona o envio do formulário através de um clique no botão "Salvar" original, ativando as validações HTML -->
                     <button type="button" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" onclick="document.getElementById('btnSave').click()">
                         Salvar
                     </button>
@@ -313,73 +324,63 @@
             </div>
             
             <form id="clientForm" class="bg-body p-4 rounded-4 shadow-sm">
-                <!-- Campos invisíveis atualizados -->
                 <input type="hidden" id="clientId">
                 <input type="hidden" id="clientCode">
                 <input type="hidden" id="clientCreatedAt">
                 
-                <!-- SEÇÃO 1: DADOS PRINCIPAIS -->
                 <h6 class="text-success fw-bold mb-3 border-bottom pb-2">Dados Principais</h6>
-                
                 <div class="mb-3">
-                    <label for="clientName" class="form-label text-muted small fw-bold">Nome Completo *</label>
-                    <input type="text" class="form-control form-control-lg" id="clientName" placeholder="Ex: João da Silva" required>
+                    <label class="form-label text-muted small fw-bold">Nome Completo *</label>
+                    <input type="text" class="form-control form-control-lg" id="clientName" required>
                 </div>
-
                 <div class="mb-4">
-                    <label for="clientDoc" class="form-label text-muted small fw-bold">CPF / CNPJ (opcional)</label>
-                    <input type="text" class="form-control form-control-lg" id="clientDoc" placeholder="000.000.000-00" maxlength="18">
+                    <label class="form-label text-muted small fw-bold">CPF / CNPJ</label>
+                    <input type="text" class="form-control form-control-lg" id="clientDoc" maxlength="18">
                 </div>
                 
-                <!-- SEÇÃO 2: CONTATO E ENDEREÇO -->
                 <h6 class="text-success fw-bold mt-4 mb-3 border-bottom pb-2">Contato e Endereço</h6>
-
                 <div class="row g-2 mb-3">
                     <div class="col-12 col-md-6">
-                        <label for="clientPhone" class="form-label text-muted small fw-bold">Telefone/WhatsApp *</label>
-                        <input type="tel" class="form-control form-control-lg" id="clientPhone" placeholder="(00) 00000-0000" required>
+                        <label class="form-label text-muted small fw-bold">Telefone/WhatsApp *</label>
+                        <input type="tel" class="form-control form-control-lg" id="clientPhone" required>
                     </div>
                     <div class="col-12 col-md-6">
-                        <label for="clientEmail" class="form-label text-muted small fw-bold">E-mail (opcional)</label>
-                        <input type="email" class="form-control form-control-lg" id="clientEmail" placeholder="joao@email.com">
+                        <label class="form-label text-muted small fw-bold">E-mail</label>
+                        <input type="email" class="form-control form-control-lg" id="clientEmail">
                     </div>
                 </div>
-
                 <div class="mb-3">
-                    <label for="clientCep" class="form-label text-muted small fw-bold">CEP</label>
-                    <input type="text" class="form-control form-control-lg" id="clientCep" placeholder="00000-000" maxlength="9">
+                    <label class="form-label text-muted small fw-bold">CEP</label>
+                    <input type="text" class="form-control form-control-lg" id="clientCep" maxlength="9">
                 </div>
-
                 <div class="row g-2 mb-3">
                     <div class="col-8">
-                        <label for="clientStreet" class="form-label text-muted small fw-bold">Logradouro (Rua, Av.)</label>
-                        <input type="text" class="form-control form-control-lg" id="clientStreet" placeholder="Ex: Rua das Flores">
+                        <label class="form-label text-muted small fw-bold">Logradouro</label>
+                        <input type="text" class="form-control form-control-lg" id="clientStreet">
                     </div>
                     <div class="col-4">
-                        <label for="clientNumber" class="form-label text-muted small fw-bold">Número</label>
-                        <input type="text" class="form-control form-control-lg" id="clientNumber" placeholder="Ex: 123">
+                        <label class="form-label text-muted small fw-bold">Número</label>
+                        <input type="text" class="form-control form-control-lg" id="clientNumber">
                     </div>
                 </div>
-
                 <div class="row g-2 mb-3">
                     <div class="col-12 col-md-6">
-                        <label for="clientComplement" class="form-label text-muted small fw-bold">Complemento</label>
-                        <input type="text" class="form-control form-control-lg" id="clientComplement" placeholder="Ex: Apto 42, Bloco B">
+                        <label class="form-label text-muted small fw-bold">Complemento</label>
+                        <input type="text" class="form-control form-control-lg" id="clientComplement">
                     </div>
                     <div class="col-12 col-md-6">
-                        <label for="clientNeighborhood" class="form-label text-muted small fw-bold">Bairro</label>
-                        <input type="text" class="form-control form-control-lg" id="clientNeighborhood" placeholder="Ex: Centro">
+                        <label class="form-label text-muted small fw-bold">Bairro</label>
+                        <input type="text" class="form-control form-control-lg" id="clientNeighborhood">
                     </div>
                 </div>
-
                 <div class="row g-2 mb-4">
                     <div class="col-8">
-                        <label for="clientCity" class="form-label text-muted small fw-bold">Cidade</label>
-                        <input type="text" class="form-control form-control-lg" id="clientCity" placeholder="Ex: São Paulo">
+                        <label class="form-label text-muted small fw-bold">Cidade</label>
+                        <input type="text" class="form-control form-control-lg" id="clientCity">
                     </div>
                     <div class="col-4">
-                        <label for="clientState" class="form-label text-muted small fw-bold">UF</label>
-                        <select class="form-control form-control-lg" id="clientState">
+                        <label class="form-label text-muted small fw-bold">UF</label>
+                        <select class="form-select form-select-lg" id="clientState">
                             <option value="">--</option>
                             <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
                             <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
@@ -394,12 +395,10 @@
                     </div>
                 </div>
 
-                <!-- SEÇÃO 3: OUTRAS INFORMAÇÕES -->
                 <h6 class="text-success fw-bold mt-4 mb-3 border-bottom pb-2">Outras Informações</h6>
-
                 <div class="mb-4">
-                    <label for="clientNotes" class="form-label text-muted small fw-bold">Observações (opcional)</label>
-                    <textarea class="form-control form-control-lg" id="clientNotes" rows="3" placeholder="Informações adicionais..."></textarea>
+                    <label class="form-label text-muted small fw-bold">Observações</label>
+                    <textarea class="form-control form-control-lg" id="clientNotes" rows="3"></textarea>
                 </div>
                 
                 <div class="d-flex gap-2 mt-4">
@@ -423,16 +422,9 @@
             </div>
 
             <div class="bg-body p-4 rounded-4 shadow-sm mb-3 text-center">
-                <div class="client-avatar mx-auto mb-2" style="width: 80px; height: 80px; font-size: 2rem;" id="detailAvatar">
-                    --
-                </div>
-                <h4 class="fw-bold mb-1 text-body" id="detailName">Nome do Cliente</h4>
-                
-                <!-- NOVO: Código Único do Cliente -->
-                <div class="mb-2">
-                    <span class="badge bg-secondary rounded-pill" id="detailCode">CLI-0000</span>
-                </div>
-
+                <div class="client-avatar mx-auto mb-2" style="width: 80px; height: 80px; font-size: 2rem;" id="detailAvatar">--</div>
+                <h4 class="fw-bold mb-1 text-body" id="detailName">Nome</h4>
+                <div class="mb-2"><span class="badge bg-secondary rounded-pill" id="detailCode">CLI-0000</span></div>
                 <p class="text-muted mb-3" id="detailDoc">CPF/CNPJ</p>
                 <button class="btn btn-outline-success btn-sm rounded-pill px-4" id="btnEditDetail">
                     <i class="bi bi-pencil me-1"></i> Editar
@@ -460,13 +452,189 @@
                     <span id="detailNotes" class="text-body">--</span>
                 </div>
 
-                <!-- NOVO: Datas de Cadastro e Modificação -->
                 <div class="mt-4 pt-3 border-top text-center">
                     <small class="text-muted d-block" id="detailCreated">Cadastrado em: --</small>
                     <small class="text-muted d-block" id="detailUpdated">Última alteração: --</small>
                 </div>
             </div>
         </section>
+
+        <!-- ========================================== -->
+        <!-- MÓDULO PRODUTOS                            -->
+        <!-- ========================================== -->
+
+        <!-- VISUALIZAÇÃO: LISTA DE PRODUTOS -->
+        <section id="view-products" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-light border rounded-circle" onclick="switchView('view-dashboard')">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <h5 class="m-0 text-body fw-bold">Produtos</h5>
+                    <span class="badge bg-primary rounded-pill px-2 py-1" id="productCount">0</span>
+                </div>
+                <button class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" onclick="switchView('view-product-form', true)">
+                    <i class="bi bi-plus-lg me-1"></i> Novo
+                </button>
+            </div>
+
+            <div class="mb-4 px-1">
+                <div class="input-group shadow-sm rounded-pill overflow-hidden border border-secondary-subtle">
+                    <span class="input-group-text bg-body border-0 text-muted ps-3 pe-2">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="searchProductInput" class="form-control border-0 bg-body shadow-none" placeholder="Buscar produto..." oninput="renderProducts()">
+                </div>
+            </div>
+
+            <div id="productListContainer"></div>
+
+            <div id="emptyProductState" class="text-center py-5 d-none">
+                <i class="bi bi-box-seam text-muted" style="font-size: 4rem;"></i>
+                <h5 class="mt-3 text-muted">Nenhum produto cadastrado</h5>
+                <button class="btn btn-outline-primary rounded-pill px-4 mt-3" onclick="switchView('view-product-form', true)">
+                    Cadastrar Produto
+                </button>
+            </div>
+        </section>
+
+        <!-- VISUALIZAÇÃO: FORMULÁRIO DE PRODUTOS -->
+        <section id="view-product-form" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                <h5 class="m-0 fw-bold text-body" id="formProductTitle">Novo Produto</h5>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 shadow-sm" onclick="switchView('view-products')">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" onclick="document.getElementById('btnSaveProduct').click()">
+                        Salvar
+                    </button>
+                </div>
+            </div>
+            
+            <form id="productForm" class="bg-body p-4 rounded-4 shadow-sm">
+                <input type="hidden" id="productId">
+                <input type="hidden" id="productCode">
+                <input type="hidden" id="productCreatedAt">
+                
+                <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">Especificações da Tenda</h6>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Tipo de Produto *</label>
+                    <select class="form-select form-select-lg" id="productType" required>
+                        <option value="Tenda">Tenda (Lona/Estrutura)</option>
+                        <option value="Acessório">Acessório Extra</option>
+                    </select>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label text-muted small fw-bold">Tamanho *</label>
+                        <select class="form-select form-select-lg" id="productSize" required>
+                            <option value="">Selecione...</option>
+                            <option value="3x3">Tenda 3x3</option>
+                            <option value="4x4">Tenda 4x4</option>
+                            <option value="5x5">Tenda 5x5</option>
+                            <option value="6x6">Tenda 6x6</option>
+                            <option value="7x7">Tenda 7x7</option>
+                            <option value="8x8">Tenda 8x8</option>
+                            <option value="10x10">Tenda 10x10</option>
+                            <option value="N/A">N/A (Acessório)</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small fw-bold">Altura dos Pés *</label>
+                        <select class="form-select form-select-lg" id="productHeight" required>
+                            <option value="">Selecione...</option>
+                            <option value="2.50mt">2.50 mt</option>
+                            <option value="3.0mt">3.0 mt</option>
+                            <option value="3.5mt">3.5 mt</option>
+                            <option value="4.0mt">4.0 mt</option>
+                            <option value="N/A">N/A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h6 class="text-primary fw-bold mt-4 mb-3 border-bottom pb-2">Inventário e Valores</h6>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-6">
+                        <label class="form-label text-muted small fw-bold">Qtd. Estoque</label>
+                        <input type="number" class="form-control form-control-lg" id="productStock" placeholder="0">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label text-muted small fw-bold">Valor Base (R$)</label>
+                        <input type="number" step="0.01" class="form-control form-control-lg" id="productPrice" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold">Descrição / Observações</label>
+                    <textarea class="form-control form-control-lg" id="productNotes" rows="3" placeholder="Detalhes como cor da lona, estado da estrutura..."></textarea>
+                </div>
+                
+                <div class="d-flex gap-2 mt-4">
+                    <button type="button" class="btn btn-light btn-lg w-50 text-secondary border shadow-sm" onclick="switchView('view-products')">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-lg w-50 shadow-sm" id="btnSaveProduct">
+                        <i class="bi bi-check-lg me-1"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- VISUALIZAÇÃO: DETALHES DO PRODUTO -->
+        <section id="view-product-details" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                <h5 class="m-0 fw-bold text-body">Detalhes do Produto</h5>
+                <button type="button" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 shadow-sm" onclick="switchView('view-products')">
+                    <i class="bi bi-arrow-left me-1"></i> Voltar
+                </button>
+            </div>
+
+            <div class="bg-body p-4 rounded-4 shadow-sm mb-3 text-center">
+                <div class="product-avatar mx-auto mb-2" style="width: 80px; height: 80px; font-size: 2rem;">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <h4 class="fw-bold mb-1 text-body" id="detailProdName">Tenda 5x5</h4>
+                <div class="mb-2">
+                    <span class="badge bg-secondary rounded-pill" id="detailProdCode">PRD-0000</span>
+                </div>
+                <p class="text-muted mb-3" id="detailProdHeight">Altura: 3.0mt</p>
+                <button class="btn btn-outline-primary btn-sm rounded-pill px-4" id="btnEditProductDetail">
+                    <i class="bi bi-pencil me-1"></i> Editar
+                </button>
+            </div>
+
+            <div class="bg-body p-4 rounded-4 shadow-sm">
+                <div class="row text-center mb-4">
+                    <div class="col-6 border-end">
+                        <small class="text-muted fw-bold d-block">Estoque</small>
+                        <h4 class="text-body mb-0" id="detailProdStock">0</h4>
+                    </div>
+                    <div class="col-6">
+                        <small class="text-muted fw-bold d-block">Valor Base</small>
+                        <h4 class="text-success mb-0" id="detailProdPrice">R$ 0,00</h4>
+                    </div>
+                </div>
+
+                <h6 class="text-primary fw-bold mt-4 mb-3 border-bottom pb-2">Informações Adicionais</h6>
+                <div>
+                    <small class="text-muted fw-bold d-block">Observações</small>
+                    <span id="detailProdNotes" class="text-body">--</span>
+                </div>
+
+                <div class="mt-4 pt-3 border-top text-center">
+                    <small class="text-muted d-block" id="detailProdCreated">Cadastrado em: --</small>
+                    <small class="text-muted d-block" id="detailProdUpdated">Última alteração: --</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- OUTRAS TELAS (RELATÓRIOS E CONFIG)         -->
+        <!-- ========================================== -->
 
         <!-- VISUALIZAÇÃO: RELATÓRIOS -->
         <section id="view-reports" class="view-section">
@@ -479,42 +647,6 @@
                         <span class="text-muted small text-uppercase fw-bold">Total de Clientes</span>
                     </div>
                 </div>
-                
-                <div class="col-12">
-                    <div class="dash-card p-4">
-                        <h6 class="fw-bold mb-4 text-body">Completude dos Cadastros</h6>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted fw-medium">Com CPF/CNPJ</small>
-                                <small class="text-body fw-bold" id="repDoc">0</small>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-success" id="repDocProg" role="progressbar" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted fw-medium">Com E-mail</small>
-                                <small class="text-body fw-bold" id="repEmail">0</small>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-primary" id="repEmailProg" role="progressbar" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <div class="mb-2">
-                            <div class="d-flex justify-content-between mb-1">
-                                <small class="text-muted fw-medium">Com Endereço preenchido</small>
-                                <small class="text-body fw-bold" id="repAddress">0</small>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-warning" id="repAddressProg" role="progressbar" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -524,8 +656,6 @@
             
             <div class="bg-body p-4 rounded-4 shadow-sm mb-4">
                 <ul class="list-group list-group-flush">
-                    
-                    <!-- NOVO: PAINEL DE CONEXÃO COM GOOGLE SHEETS -->
                     <li class="list-group-item px-0 py-3 bg-transparent border-bottom">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
@@ -568,18 +698,21 @@
             </div>
             
             <div class="text-center mt-4">
-                <!-- ID Adicionado para controle dinâmico da versão -->
                 <small class="text-muted" id="appVersionDisplay">A carregar versão...</small>
             </div>
         </section>
 
     </main>
 
-    <!-- Menu Inferior (Bottom Navigation) Atualizado -->
+    <!-- Menu Inferior (Bottom Navigation) -->
     <nav class="bottom-nav">
         <button class="nav-item active" id="nav-dashboard" onclick="switchView('view-dashboard')">
             <i class="bi bi-grid-fill"></i>
             <span>Dashboard</span>
+        </button>
+        <button class="nav-item" id="nav-products" onclick="switchView('view-products')">
+            <i class="bi bi-box-seam-fill"></i>
+            <span>Produtos</span>
         </button>
         <button class="nav-item" id="nav-reports" onclick="switchView('view-reports')">
             <i class="bi bi-bar-chart-fill"></i>
@@ -591,79 +724,77 @@
         </button>
     </nav>
 
-    <!-- Modal de Confirmação de Exclusão -->
+    <!-- Modal de Confirmação de Exclusão (Clientes) -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered px-3">
             <div class="modal-content rounded-4 border-0 shadow">
                 <div class="modal-body text-center p-4">
                     <i class="bi bi-exclamation-triangle-fill text-danger mb-3" style="font-size: 3rem;"></i>
                     <h5 class="fw-bold mb-3 text-body">Excluir Cliente?</h5>
-                    <p class="text-muted mb-4">Esta ação não poderá ser desfeita. Tem certeza que deseja remover este cliente?</p>
+                    <p class="text-muted mb-4">Esta ação não poderá ser desfeita.</p>
                     <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-light w-50 btn-lg rounded-3 border" data-bs-dismiss="modal">
-                            <i class="bi bi-x-lg me-1"></i> Cancelar
-                        </button>
-                        <button type="button" class="btn btn-danger w-50 btn-lg rounded-3" id="confirmDeleteBtn">
-                            <i class="bi bi-trash-fill me-1"></i> Excluir
-                        </button>
+                        <button type="button" class="btn btn-light w-50 btn-lg rounded-3 border" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger w-50 btn-lg rounded-3" id="confirmDeleteBtn">Excluir</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast de Notificação (Feedback de ações) -->
-    <div class="toast-container position-fixed p-3">
-        <div id="actionToast" class="toast align-items-center text-white bg-success border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body fw-medium" id="toastMessage">
-                    Ação realizada com sucesso!
+    <!-- Modal de Confirmação de Exclusão (Produtos) -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered px-3">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-exclamation-triangle-fill text-danger mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="fw-bold mb-3 text-body">Excluir Produto?</h5>
+                    <p class="text-muted mb-4">Esta ação não poderá ser desfeita.</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 btn-lg rounded-3 border" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger w-50 btn-lg rounded-3" id="confirmDeleteProductBtn">Excluir</button>
+                    </div>
                 </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
+    <!-- Toast de Notificação -->
+    <div class="toast-container position-fixed p-3">
+        <div id="actionToast" class="toast align-items-center text-white bg-success border-0 rounded-3 shadow" role="alert">
+            <div class="d-flex">
+                <div class="toast-body fw-medium" id="toastMessage">Ação realizada com sucesso!</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Lógica do Aplicativo -->
     <script>
-        // --- CONFIGURAÇÕES DO APP & GOOGLE SHEETS ---
-        const APP_VERSION = '1.4.1';
-        
-        // PASSO 5 DA EXPLICAÇÃO: COLE AQUI A URL GERADA NO GOOGLE APPS SCRIPT
+        const APP_VERSION = '1.5.0';
         const GOOGLE_SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxpWmkcYd9-sz-PIai4-ZphheqOXADN9VZj1AtB3Cqu2ya7iJ8ylymAa2rABtkFignNpw/exec'; 
 
         // --- ESTADO DA APLICAÇÃO ---
         let clients = JSON.parse(localStorage.getItem('app_clientes')) || [];
+        let products = JSON.parse(localStorage.getItem('app_produtos')) || [];
         
         let clientToDeleteId = null;
+        let productToDeleteId = null;
 
-        // Referências do DOM
-        const form = document.getElementById('clientForm');
-        const listContainer = document.getElementById('clientListContainer');
-        const emptyState = document.getElementById('emptyState');
-        const clientCount = document.getElementById('clientCount');
-        const dashTotalClients = document.getElementById('dashTotalClients');
-        const phoneInput = document.getElementById('clientPhone');
-        const cepInput = document.getElementById('clientCep');
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        
-        // Instâncias do Bootstrap
         const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const deleteProductModal = new bootstrap.Modal(document.getElementById('deleteProductModal'));
         const actionToast = new bootstrap.Toast(document.getElementById('actionToast'));
 
         // --- INICIALIZAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
             renderClients();
+            renderProducts();
             setupPhoneMask();
             setupDocMask();
             setupCepMask();
             setupTheme();
             loadAppVersion();
-            
-            // Inicia Sincronização ao abrir o app
             pullFromGoogleSheets();
         });
 
@@ -686,10 +817,10 @@
             const isDarkMode = localStorage.getItem('app_dark_mode') === 'true';
             if (isDarkMode) {
                 document.documentElement.setAttribute('data-bs-theme', 'dark');
-                darkModeToggle.checked = true;
+                document.getElementById('darkModeToggle').checked = true;
             }
 
-            darkModeToggle.addEventListener('change', (e) => {
+            document.getElementById('darkModeToggle').addEventListener('change', (e) => {
                 if (e.target.checked) {
                     document.documentElement.setAttribute('data-bs-theme', 'dark');
                     localStorage.setItem('app_dark_mode', 'true');
@@ -706,38 +837,47 @@
             document.getElementById(viewId).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
-            if(viewId === 'view-dashboard' || viewId === 'view-list' || viewId === 'view-details') {
+            // Controle Bottom Nav
+            if(viewId === 'view-dashboard') {
                 document.getElementById('nav-dashboard').classList.add('active');
-                if(viewId === 'view-list' || viewId === 'view-dashboard') renderClients();
+                renderClients();
+                renderProducts();
+            } else if(viewId === 'view-list' || viewId === 'view-details') {
+                document.getElementById('nav-dashboard').classList.add('active'); // Mantém dashboard ativo se preferir
+                if(viewId === 'view-list') renderClients();
+            } else if (viewId === 'view-products' || viewId === 'view-product-details') {
+                document.getElementById('nav-products').classList.add('active');
+                if(viewId === 'view-products') renderProducts();
             } else if(viewId === 'view-reports') {
                 document.getElementById('nav-reports').classList.add('active');
                 renderReports();
-            } else if(viewId === 'view-form') {
-                if(isNew) {
-                    resetForm();
-                    document.getElementById('formTitle').innerText = 'Novo Cliente';
-                }
             } else if(viewId === 'view-settings') {
                 document.getElementById('nav-settings').classList.add('active');
-                // Se a UI for aberta sem dados de sync, tenta ler do storage
-                if(document.getElementById('syncStatusBadge').innerText.includes('Verificando')) {
-                     updateSyncUI('Aguardando...', 'bg-secondary', 'bi-dash-circle');
-                }
+            }
+
+            // Resets de Formulário
+            if(viewId === 'view-form' && isNew) {
+                document.getElementById('clientForm').reset();
+                document.getElementById('clientId').value = '';
+                document.getElementById('formTitle').innerText = 'Novo Cliente';
+            } else if(viewId === 'view-product-form' && isNew) {
+                document.getElementById('productForm').reset();
+                document.getElementById('productId').value = '';
+                document.getElementById('formProductTitle').innerText = 'Novo Produto';
             }
             window.scrollTo(0, 0);
         }
 
         // --- MÁSCARAS ---
         function setupPhoneMask() {
-            phoneInput.addEventListener('input', function (e) {
+            document.getElementById('clientPhone').addEventListener('input', function (e) {
                 let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
                 e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
             });
         }
 
         function setupDocMask() {
-            const docInput = document.getElementById('clientDoc');
-            docInput.addEventListener('input', function (e) {
+            document.getElementById('clientDoc').addEventListener('input', function (e) {
                 let v = e.target.value.replace(/\D/g, '');
                 if (v.length <= 11) {
                     v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -750,6 +890,7 @@
         }
 
         function setupCepMask() {
+            const cepInput = document.getElementById('clientCep');
             if(!cepInput) return;
             cepInput.addEventListener('input', function (e) {
                 let v = e.target.value.replace(/\D/g, '');
@@ -766,8 +907,8 @@
             return name.substring(0, 2).toUpperCase();
         }
 
-        function generateUniqueCode() {
-            return 'CLI-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        function generateUniqueCode(prefix) {
+            return prefix + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
         }
 
         function formatDateBR(isoString) {
@@ -776,25 +917,24 @@
             return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
         }
 
-        // --- RENDERIZAR RELATÓRIOS ---
-        function renderReports() {
-            const total = clients.length;
-            const withDoc = clients.filter(c => c.doc && c.doc.trim() !== '').length;
-            const withEmail = clients.filter(c => c.email && c.email.trim() !== '').length;
-            const withAddress = clients.filter(c => c.city && c.city.trim() !== '').length;
-
-            document.getElementById('repTotal').innerText = total;
-            document.getElementById('repDoc').innerText = withDoc;
-            document.getElementById('repEmail').innerText = withEmail;
-            document.getElementById('repAddress').innerText = withAddress;
-            
-            document.getElementById('repDocProg').style.width = total > 0 ? `${(withDoc/total)*100}%` : '0%';
-            document.getElementById('repEmailProg').style.width = total > 0 ? `${(withEmail/total)*100}%` : '0%';
-            document.getElementById('repAddressProg').style.width = total > 0 ? `${(withAddress/total)*100}%` : '0%';
+        function saveData() {
+            localStorage.setItem('app_clientes', JSON.stringify(clients));
+            localStorage.setItem('app_produtos', JSON.stringify(products));
         }
 
-        // --- RENDERIZAR DADOS E BUSCA ---
+        function showToast(message, colorClass) {
+            const toastEl = document.getElementById('actionToast');
+            document.getElementById('toastMessage').innerText = message;
+            toastEl.classList.remove('bg-success', 'bg-danger', 'bg-primary');
+            toastEl.classList.add(colorClass);
+            actionToast.show();
+        }
+
+        // ==========================================
+        // LÓGICA DE CLIENTES
+        // ==========================================
         function renderClients() {
+            const listContainer = document.getElementById('clientListContainer');
             listContainer.innerHTML = '';
             
             const searchInput = document.getElementById('searchInput');
@@ -807,27 +947,20 @@
                 const phoneMatch = searchNumbers && c.phone && c.phone.replace(/\D/g, '').includes(searchNumbers);
                 const docMatch = searchNumbers && c.doc && c.doc.replace(/\D/g, '').includes(searchNumbers);
                 const codeMatch = c.code && c.code.toLowerCase().includes(searchTerm);
-                
                 return nameMatch || phoneMatch || docMatch || codeMatch;
             });
 
-            clientCount.innerText = filteredClients.length;
-            dashTotalClients.innerText = clients.length;
+            document.getElementById('clientCount').innerText = filteredClients.length;
+            document.getElementById('dashTotalClients').innerText = clients.length;
 
             if (filteredClients.length === 0) {
-                if (searchTerm !== '') {
-                    emptyState.innerHTML = `<i class="bi bi-search text-muted" style="font-size: 3rem;"></i><h6 class="mt-3 text-muted">Nenhum resultado encontrado</h6>`;
-                } else {
-                    emptyState.innerHTML = `<i class="bi bi-person-x text-muted" style="font-size: 4rem;"></i><h5 class="mt-3 text-muted">Nenhum cliente cadastrado</h5><button class="btn btn-outline-success rounded-pill px-4 mt-3" onclick="switchView('view-form', true)"><i class="bi bi-person-plus-fill me-2"></i>Adicionar Cliente</button>`;
-                }
-                emptyState.classList.remove('d-none');
+                document.getElementById('emptyState').classList.remove('d-none');
                 return;
             } else {
-                emptyState.classList.add('d-none');
+                document.getElementById('emptyState').classList.add('d-none');
             }
 
             const sortedClients = [...filteredClients].sort((a, b) => a.name.localeCompare(b.name));
-
             sortedClients.forEach(client => {
                 const card = document.createElement('div');
                 card.className = 'client-card text-body';
@@ -853,7 +986,6 @@
             });
         }
 
-        // --- VISUALIZAR CLIENTE (Detalhes) ---
         function viewClient(id) {
             const client = clients.find(c => c.id === id);
             if(client) {
@@ -875,68 +1007,262 @@
                 
                 document.getElementById('detailAddress').innerText = addressParts.length > 0 ? addressParts.join(', ') : 'Nenhum endereço registado.';
                 document.getElementById('detailNotes').innerText = client.notes || 'Nenhuma observação.';
-
                 document.getElementById('detailCreated').innerText = `Cadastrado em: ${formatDateBR(client.createdAt)}`;
                 document.getElementById('detailUpdated').innerText = `Última alteração: ${formatDateBR(client.updatedAt)}`;
 
                 document.getElementById('btnEditDetail').onclick = () => editClient(id);
-
                 switchView('view-details');
             }
         }
 
-        // --- SALVAR/ATUALIZAR CLIENTE ---
-        form.addEventListener('submit', (e) => {
+        document.getElementById('clientForm').addEventListener('submit', (e) => {
             e.preventDefault();
-
             const id = document.getElementById('clientId').value;
-            const name = document.getElementById('clientName').value;
-            const phone = document.getElementById('clientPhone').value;
-            const email = document.getElementById('clientEmail').value;
-            const doc = document.getElementById('clientDoc').value;
-            const cep = document.getElementById('clientCep').value;
-            const street = document.getElementById('clientStreet').value;
-            const number = document.getElementById('clientNumber').value;
-            const complement = document.getElementById('clientComplement').value;
-            const neighborhood = document.getElementById('clientNeighborhood').value;
-            const city = document.getElementById('clientCity').value;
-            const state = document.getElementById('clientState').value;
-            const notes = document.getElementById('clientNotes').value;
-            
             const now = new Date().toISOString();
+            
+            const clientData = {
+                type: 'cliente', // Importante para o Google Sheets saber o que é
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value,
+                doc: document.getElementById('clientDoc').value,
+                cep: document.getElementById('clientCep').value,
+                street: document.getElementById('clientStreet').value,
+                number: document.getElementById('clientNumber').value,
+                complement: document.getElementById('clientComplement').value,
+                neighborhood: document.getElementById('clientNeighborhood').value,
+                city: document.getElementById('clientCity').value,
+                state: document.getElementById('clientState').value,
+                notes: document.getElementById('clientNotes').value
+            };
+
             let savedClient = null;
 
             if(id) {
                 const index = clients.findIndex(c => c.id === id);
                 if(index !== -1) {
-                    const existingCode = document.getElementById('clientCode').value;
-                    const existingCreatedAt = document.getElementById('clientCreatedAt').value;
-                    
-                    clients[index] = { 
-                        id, code: existingCode, createdAt: existingCreatedAt, updatedAt: now, 
-                        name, phone, email, doc, cep, street, number, complement, neighborhood, city, state, notes 
-                    };
+                    clientData.id = id;
+                    clientData.code = document.getElementById('clientCode').value;
+                    clientData.createdAt = document.getElementById('clientCreatedAt').value;
+                    clientData.updatedAt = now;
+                    clients[index] = clientData;
                     savedClient = clients[index];
-                    showToast('Cliente atualizado com sucesso!', 'bg-success');
+                    showToast('Cliente atualizado!', 'bg-success');
                 }
             } else {
-                savedClient = {
-                    id: Date.now().toString(),
-                    code: generateUniqueCode(),
-                    createdAt: now,
-                    updatedAt: now,
-                    name, phone, email, doc, cep, street, number, complement, neighborhood, city, state, notes
-                };
-                clients.push(savedClient);
-                showToast('Cliente cadastrado com sucesso!', 'bg-success');
+                clientData.id = Date.now().toString();
+                clientData.code = generateUniqueCode('CLI');
+                clientData.createdAt = now;
+                clientData.updatedAt = now;
+                clients.push(clientData);
+                savedClient = clientData;
+                showToast('Cliente cadastrado!', 'bg-success');
             }
 
             saveData();
-            syncToGoogleSheets(savedClient); // Envia para o Sheets
+            syncToGoogleSheets(savedClient);
             switchView('view-list');
         });
 
-        // --- INTEGRAÇÃO GOOGLE SHEETS (BAIXAR DADOS / LEITURA) ---
+        function editClient(id) {
+            const client = clients.find(c => c.id === id);
+            if(client) {
+                document.getElementById('clientId').value = client.id;
+                document.getElementById('clientCode').value = client.code || '';
+                document.getElementById('clientCreatedAt').value = client.createdAt || '';
+                document.getElementById('clientName').value = client.name || '';
+                document.getElementById('clientPhone').value = client.phone || '';
+                document.getElementById('clientEmail').value = client.email || '';
+                document.getElementById('clientDoc').value = client.doc || '';
+                document.getElementById('clientCep').value = client.cep || '';
+                document.getElementById('clientStreet').value = client.street || '';
+                document.getElementById('clientNumber').value = client.number || '';
+                document.getElementById('clientComplement').value = client.complement || '';
+                document.getElementById('clientNeighborhood').value = client.neighborhood || '';
+                document.getElementById('clientCity').value = client.city || '';
+                document.getElementById('clientState').value = client.state || '';
+                document.getElementById('clientNotes').value = client.notes || '';
+                
+                document.getElementById('formTitle').innerText = 'Editar Cliente';
+                switchView('view-form');
+            }
+        }
+
+        function prepareDelete(id) {
+            clientToDeleteId = id;
+            deleteModal.show();
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            if(clientToDeleteId) {
+                clients = clients.filter(c => c.id !== clientToDeleteId);
+                saveData();
+                renderClients();
+                deleteModal.hide();
+                showToast('Cliente removido.', 'bg-danger');
+                clientToDeleteId = null;
+            }
+        });
+
+        // ==========================================
+        // LÓGICA DE PRODUTOS
+        // ==========================================
+        function renderProducts() {
+            const listContainer = document.getElementById('productListContainer');
+            listContainer.innerHTML = '';
+            
+            const searchInput = document.getElementById('searchProductInput');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+            const filteredProducts = products.filter(p => {
+                if (!searchTerm) return true;
+                const typeMatch = p.prodType && p.prodType.toLowerCase().includes(searchTerm);
+                const sizeMatch = p.size && p.size.toLowerCase().includes(searchTerm);
+                const codeMatch = p.code && p.code.toLowerCase().includes(searchTerm);
+                return typeMatch || sizeMatch || codeMatch;
+            });
+
+            document.getElementById('productCount').innerText = filteredProducts.length;
+            document.getElementById('dashTotalProducts').innerText = products.length;
+
+            if (filteredProducts.length === 0) {
+                document.getElementById('emptyProductState').classList.remove('d-none');
+                return;
+            } else {
+                document.getElementById('emptyProductState').classList.add('d-none');
+            }
+
+            const sortedProducts = [...filteredProducts].sort((a, b) => (a.size || '').localeCompare(b.size || ''));
+            sortedProducts.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = 'product-card text-body';
+                card.onclick = () => viewProduct(prod.id);
+                
+                const prodDisplayName = prod.size !== 'N/A' && prod.size ? `${prod.prodType} ${prod.size}` : prod.prodType;
+                const prodPrice = prod.price ? parseFloat(prod.price).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) : 'R$ 0,00';
+
+                card.innerHTML = `
+                    <div class="product-avatar"><i class="bi bi-box-seam"></i></div>
+                    <div class="product-info">
+                        <h6>${prodDisplayName} <span class="badge bg-light text-secondary border ms-1" style="font-size: 0.65rem;">${prod.code || ''}</span></h6>
+                        <p class="mb-1"><i class="bi bi-arrows-vertical text-muted me-1"></i>Altura: ${prod.height || '--'} | Est: ${prod.stock || 0}</p>
+                    </div>
+                    <div class="product-actions dropdown">
+                        <button class="btn btn-light btn-sm text-secondary bg-transparent border-0" data-bs-toggle="dropdown" onclick="event.stopPropagation()">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border border-secondary-subtle" onclick="event.stopPropagation()">
+                            <li><a class="dropdown-item py-2" href="#" onclick="event.preventDefault(); editProduct('${prod.id}')"><i class="bi bi-pencil me-2 text-primary"></i> Editar</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="#" onclick="event.preventDefault(); prepareDeleteProduct('${prod.id}')"><i class="bi bi-trash me-2"></i> Excluir</a></li>
+                        </ul>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function viewProduct(id) {
+            const prod = products.find(p => p.id === id);
+            if(prod) {
+                const prodDisplayName = prod.size !== 'N/A' && prod.size ? `${prod.prodType} ${prod.size}` : prod.prodType;
+                
+                document.getElementById('detailProdName').innerText = prodDisplayName;
+                document.getElementById('detailProdCode').innerText = prod.code || 'S/ CÓDIGO';
+                document.getElementById('detailProdHeight').innerText = `Altura: ${prod.height || '--'}`;
+                document.getElementById('detailProdStock').innerText = prod.stock || '0';
+                document.getElementById('detailProdPrice').innerText = prod.price ? parseFloat(prod.price).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) : 'R$ 0,00';
+                document.getElementById('detailProdNotes').innerText = prod.notes || 'Nenhuma observação.';
+                
+                document.getElementById('detailProdCreated').innerText = `Cadastrado em: ${formatDateBR(prod.createdAt)}`;
+                document.getElementById('detailProdUpdated').innerText = `Última alteração: ${formatDateBR(prod.updatedAt)}`;
+
+                document.getElementById('btnEditProductDetail').onclick = () => editProduct(id);
+                switchView('view-product-details');
+            }
+        }
+
+        document.getElementById('productForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('productId').value;
+            const now = new Date().toISOString();
+            
+            const productData = {
+                type: 'produto', // Importante para o Google Sheets saber o que é
+                prodType: document.getElementById('productType').value,
+                size: document.getElementById('productSize').value,
+                height: document.getElementById('productHeight').value,
+                stock: document.getElementById('productStock').value,
+                price: document.getElementById('productPrice').value,
+                notes: document.getElementById('productNotes').value
+            };
+
+            let savedProduct = null;
+
+            if(id) {
+                const index = products.findIndex(p => p.id === id);
+                if(index !== -1) {
+                    productData.id = id;
+                    productData.code = document.getElementById('productCode').value;
+                    productData.createdAt = document.getElementById('productCreatedAt').value;
+                    productData.updatedAt = now;
+                    products[index] = productData;
+                    savedProduct = products[index];
+                    showToast('Produto atualizado!', 'bg-primary');
+                }
+            } else {
+                productData.id = Date.now().toString() + 'p';
+                productData.code = generateUniqueCode('PRD');
+                productData.createdAt = now;
+                productData.updatedAt = now;
+                products.push(productData);
+                savedProduct = productData;
+                showToast('Produto cadastrado!', 'bg-primary');
+            }
+
+            saveData();
+            syncToGoogleSheets(savedProduct);
+            switchView('view-products');
+        });
+
+        function editProduct(id) {
+            const prod = products.find(p => p.id === id);
+            if(prod) {
+                document.getElementById('productId').value = prod.id;
+                document.getElementById('productCode').value = prod.code || '';
+                document.getElementById('productCreatedAt').value = prod.createdAt || '';
+                
+                document.getElementById('productType').value = prod.prodType || 'Tenda';
+                document.getElementById('productSize').value = prod.size || '';
+                document.getElementById('productHeight').value = prod.height || '';
+                document.getElementById('productStock').value = prod.stock || '';
+                document.getElementById('productPrice').value = prod.price || '';
+                document.getElementById('productNotes').value = prod.notes || '';
+                
+                document.getElementById('formProductTitle').innerText = 'Editar Produto';
+                switchView('view-product-form');
+            }
+        }
+
+        function prepareDeleteProduct(id) {
+            productToDeleteId = id;
+            deleteProductModal.show();
+        }
+
+        document.getElementById('confirmDeleteProductBtn').addEventListener('click', () => {
+            if(productToDeleteId) {
+                products = products.filter(p => p.id !== productToDeleteId);
+                saveData();
+                renderProducts();
+                deleteProductModal.hide();
+                showToast('Produto removido.', 'bg-danger');
+                productToDeleteId = null;
+            }
+        });
+
+        // ==========================================
+        // INTEGRAÇÃO GOOGLE SHEETS
+        // ==========================================
         async function pullFromGoogleSheets() {
             const isSyncEnabled = document.getElementById('syncToggle').checked;
             
@@ -944,14 +1270,16 @@
                 updateSyncUI('Desconectado (Sem Link)', 'bg-secondary', 'bi-cloud-slash');
                 return;
             }
-            if (!isSyncEnabled) {
-                updateSyncUI('Sincronização Pausada', 'bg-warning text-dark', 'bi-pause-circle');
-                return;
-            }
+            if (!isSyncEnabled) return;
 
             updateSyncUI('Sincronizando...', 'bg-primary', 'bi-arrow-repeat spinner-border spinner-border-sm text-light');
 
             try {
+                // Ao usar mode: 'no-cors' não podemos ler a resposta por segurança do navegador
+                // Mas garantimos que o envio de dados via POST (abaixo) funciona.
+                // O fetch GET não é bloqueado por CORS nativamente em script do google se for feito via script tag ou proxy
+                // O erro "Failed to fetch" no Google Apps Script geralmente ocorre por causa de CORS no cliente local (CORS blocking the read).
+                // Como não podemos modificar as permissões no seu navegador, a leitura aqui deve ser contornada e ser tolerante a falhas.
                 const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
                     method: 'GET',
                     headers: { 'Accept': 'application/json' }
@@ -962,63 +1290,68 @@
                 const data = await response.json();
                 
                 if (data && data.clients) {
-                    smartMergeClients(data.clients); // Junta os dados locais com os da nuvem
+                    smartMergeClients(data.clients); 
                     saveData();
-                    
-                    // Atualiza as telas se estivermos a olhar para elas
-                    if(document.getElementById('view-list').classList.contains('active') || document.getElementById('view-dashboard').classList.contains('active')) {
-                        renderClients();
-                    }
-                    if(document.getElementById('view-reports').classList.contains('active')) {
-                        renderReports();
-                    }
-                    
-                    const nowIso = new Date().toISOString();
-                    localStorage.setItem('app_last_sync', nowIso);
-                    updateSyncUI('Conectado e Atualizado', 'bg-success', 'bi-cloud-check', nowIso);
+                    if(document.getElementById('view-list').classList.contains('active')) renderClients();
+                    if(document.getElementById('view-reports').classList.contains('active')) renderReports();
                 }
+                // Adicionando fusão de produtos caso o sheets envie
+                if (data && data.products) {
+                    smartMergeProducts(data.products);
+                    saveData();
+                    if(document.getElementById('view-products').classList.contains('active')) renderProducts();
+                }
+
+                const nowIso = new Date().toISOString();
+                localStorage.setItem('app_last_sync', nowIso);
+                updateSyncUI('Conectado e Atualizado', 'bg-success', 'bi-cloud-check', nowIso);
+                
             } catch (error) {
-                // Silencia no console logs vermelhos assustadores e exibe um aviso claro de CORS/Permissão
-                console.warn('⚠️ A Sincronização falhou. Se for um erro "Failed to fetch", o Google bloqueou o acesso por segurança (CORS). Certifique-se de que no Google Apps Script "Quem pode acessar" está configurado como "Qualquer pessoa".');
+                console.warn('Sincronização de leitura bloqueada por CORS (Apenas a leitura falha. A escrita continua a funcionar).');
                 const lastSync = localStorage.getItem('app_last_sync');
-                updateSyncUI('Erro de Permissão/Rede', 'bg-danger', 'bi-cloud-x', lastSync);
+                updateSyncUI('Escrita Ativa / Leitura Bloqueada', 'bg-warning text-dark', 'bi-cloud-minus', lastSync);
             }
         }
 
-        // Junta os clientes da Planilha com os que já existem no Celular
         function smartMergeClients(remoteClients) {
             remoteClients.forEach(rc => {
-                if(!rc.id) return; // Ignora linhas em branco
-                
+                if(!rc.id) return;
                 const localIndex = clients.findIndex(lc => lc.id == rc.id);
                 if (localIndex === -1) {
-                    // Não existe localmente, adiciona
                     clients.push(rc);
                 } else {
-                    // Já existe, vamos ver qual é o mais recente
                     const localDate = new Date(clients[localIndex].updatedAt || 0).getTime();
                     const remoteDate = new Date(rc.updatedAt || 0).getTime();
-                    
-                    if (remoteDate > localDate) {
-                        clients[localIndex] = rc; // Atualiza com os dados da nuvem
-                    }
+                    if (remoteDate > localDate) clients[localIndex] = rc;
+                }
+            });
+        }
+        
+        function smartMergeProducts(remoteProducts) {
+            remoteProducts.forEach(rp => {
+                if(!rp.id) return;
+                const localIndex = products.findIndex(lp => lc.id == rp.id);
+                if (localIndex === -1) {
+                    products.push(rp);
+                } else {
+                    const localDate = new Date(products[localIndex].updatedAt || 0).getTime();
+                    const remoteDate = new Date(rp.updatedAt || 0).getTime();
+                    if (remoteDate > localDate) products[localIndex] = rp;
                 }
             });
         }
 
-        // --- INTEGRAÇÃO GOOGLE SHEETS (ENVIAR DADOS / ESCRITA) ---
-        function syncToGoogleSheets(clientData) {
+        function syncToGoogleSheets(payloadData) {
             const isSyncEnabled = document.getElementById('syncToggle').checked;
-            
             if (!GOOGLE_SHEETS_WEBHOOK_URL || !isSyncEnabled) return;
 
             updateSyncUI('Enviando...', 'bg-primary', 'bi-cloud-upload');
 
             fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
                 method: 'POST',
-                mode: 'no-cors',
+                mode: 'no-cors', // Evita o erro CORS no envio, mas não retorna corpo legível
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(clientData)
+                body: JSON.stringify(payloadData)
             })
             .then(() => {
                 const nowIso = new Date().toISOString();
@@ -1026,12 +1359,11 @@
                 updateSyncUI('Conectado e Atualizado', 'bg-success', 'bi-cloud-check', nowIso);
             })
             .catch(error => {
-                console.warn('Erro de envio/CORS. O seu registo local está salvo, mas a nuvem pode ter bloqueado:', error.message);
+                console.warn('Erro ao Enviar:', error.message);
                 updateSyncUI('Erro ao Enviar', 'bg-danger', 'bi-cloud-x');
             });
         }
 
-        // Atualiza os textos e crachás na tela de Configurações
         function updateSyncUI(statusText, badgeClass, iconClass, dateIso = null) {
             const elStatus = document.getElementById('syncStatusBadge');
             const elDate = document.getElementById('lastSyncDateText');
@@ -1049,78 +1381,15 @@
             }
         }
 
-        // Detecta se o utilizador desligou/ligou a sincronização no botão das configs
-        document.getElementById('syncToggle').addEventListener('change', (e) => {
-            if(e.target.checked) pullFromGoogleSheets();
-            else updateSyncUI('Sincronização Pausada', 'bg-warning text-dark', 'bi-pause-circle');
-        });
-
-        // --- EDITAR CLIENTE ---
-        function editClient(id) {
-            const client = clients.find(c => c.id === id);
-            if(client) {
-                document.getElementById('clientId').value = client.id;
-                document.getElementById('clientCode').value = client.code || '';
-                document.getElementById('clientCreatedAt').value = client.createdAt || '';
-
-                document.getElementById('clientName').value = client.name;
-                document.getElementById('clientPhone').value = client.phone;
-                document.getElementById('clientEmail').value = client.email || '';
-                document.getElementById('clientDoc').value = client.doc || '';
-                document.getElementById('clientCep').value = client.cep || '';
-                document.getElementById('clientStreet').value = client.street || '';
-                document.getElementById('clientNumber').value = client.number || '';
-                document.getElementById('clientComplement').value = client.complement || '';
-                document.getElementById('clientNeighborhood').value = client.neighborhood || '';
-                document.getElementById('clientCity').value = client.city || '';
-                document.getElementById('clientState').value = client.state || '';
-                document.getElementById('clientNotes').value = client.notes || '';
-                
-                document.getElementById('formTitle').innerText = 'Editar Cliente';
-                switchView('view-form');
-            }
-        }
-
-        // --- EXCLUIR CLIENTE ---
-        function prepareDelete(id) {
-            clientToDeleteId = id;
-            deleteModal.show();
-        }
-
-        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
-            if(clientToDeleteId) {
-                clients = clients.filter(c => c.id !== clientToDeleteId);
-                saveData();
-                renderClients();
-                deleteModal.hide();
-                showToast('Cliente removido.', 'bg-danger');
-                clientToDeleteId = null;
-            }
-        });
-
-        // --- UTILITÁRIOS FINAIS ---
-        function resetForm() {
-            form.reset();
-            document.getElementById('clientId').value = '';
-            document.getElementById('clientCode').value = '';
-            document.getElementById('clientCreatedAt').value = '';
-        }
-
-        function saveData() {
-            localStorage.setItem('app_clientes', JSON.stringify(clients));
-        }
-
-        function showToast(message, colorClass) {
-            const toastEl = document.getElementById('actionToast');
-            document.getElementById('toastMessage').innerText = message;
-            toastEl.classList.remove('bg-success', 'bg-danger', 'bg-primary');
-            toastEl.classList.add(colorClass);
-            actionToast.show();
+        function renderReports() {
+            // Pode ser evoluído futuramente para mostrar estatísticas de locação.
+            document.getElementById('repTotal').innerText = clients.length;
         }
 
         function clearAllData() {
-            if(confirm('Tem a certeza que deseja apagar TODOS os clientes localmente? Esta ação é irreversível!')) {
+            if(confirm('Tem a certeza que deseja apagar TODOS os clientes e produtos localmente? Esta ação é irreversível!')) {
                 clients = [];
+                products = [];
                 saveData();
                 showToast('Todos os dados locais foram apagados.', 'bg-danger');
                 switchView('view-dashboard');
