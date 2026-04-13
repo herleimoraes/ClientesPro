@@ -285,7 +285,18 @@
 
         <!-- VISUALIZAÇÃO: FORMULÁRIO -->
         <section id="view-form" class="view-section">
-            <h5 class="mb-4 mt-2 fw-bold text-body" id="formTitle">Novo Cliente</h5>
+            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                <h5 class="m-0 fw-bold text-body" id="formTitle">Novo Cliente</h5>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-light border text-secondary rounded-pill px-3 shadow-sm" onclick="switchView('view-list')">
+                        Cancelar
+                    </button>
+                    <!-- Este botão aciona o envio do formulário através de um clique no botão "Salvar" original, ativando as validações HTML -->
+                    <button type="button" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" onclick="document.getElementById('btnSave').click()">
+                        Salvar
+                    </button>
+                </div>
+            </div>
             
             <form id="clientForm" class="bg-body p-4 rounded-4 shadow-sm">
                 <input type="hidden" id="clientId">
@@ -320,12 +331,14 @@
                     <textarea class="form-control form-control-lg" id="clientNotes" rows="3" placeholder="Informações adicionais..."></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-success btn-lg w-100 mb-3 shadow-sm" id="btnSave">
-                    <i class="bi bi-check-lg me-2"></i> Salvar Cliente
-                </button>
-                <button type="button" class="btn btn-light btn-lg w-100 text-secondary border" onclick="switchView('view-list')">
-                    <i class="bi bi-x-lg me-2"></i> Cancelar
-                </button>
+                <div class="d-flex gap-2 mt-4">
+                    <button type="button" class="btn btn-light btn-lg w-50 text-secondary border shadow-sm" onclick="switchView('view-list')">
+                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success btn-lg w-50 shadow-sm" id="btnSave">
+                        <i class="bi bi-check-lg me-1"></i> Salvar
+                    </button>
+                </div>
             </form>
         </section>
 
@@ -363,7 +376,8 @@
             </div>
             
             <div class="text-center mt-4">
-                <small class="text-muted">Versão 1.1.0</small>
+                <!-- ID Adicionado para controle dinâmico da versão -->
+                <small class="text-muted" id="appVersionDisplay">Carregando versão...</small>
             </div>
         </section>
 
@@ -423,6 +437,9 @@
 
     <!-- Lógica do Aplicativo -->
     <script>
+        // --- CONFIGURAÇÕES DO APP ---
+        const APP_VERSION = '1.1.0'; // Altere a versão aqui centralmente
+
         // --- ESTADO DA APLICAÇÃO ---
         let clients = JSON.parse(localStorage.getItem('app_clientes'));
         
@@ -480,7 +497,32 @@
             setupPhoneMask();
             setupDocMask();
             setupTheme();
+            loadAppVersion(); // Chama a função para carregar a versão dinâmica
         });
+
+        // --- LÓGICA DE VERSÃO DINÂMICA ---
+        async function loadAppVersion() {
+            const versionDisplay = document.getElementById('appVersionDisplay');
+            
+            // Método 1 (Ativo): Usando a constante local no topo do arquivo.
+            // Para atualizar, basta mudar a const APP_VERSION.
+            versionDisplay.innerText = `Versão ${APP_VERSION}`;
+
+            // Método 2 (Para uso com GitHub Actions / CI-CD futuramente):
+            /*
+            try {
+                // Ao criar um arquivo "version.json" na raiz com { "version": "1.2.0" }
+                // você pode buscar essa informação sem editar o HTML estático.
+                const response = await fetch('./version.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    versionDisplay.innerText = `Versão ${data.version}`;
+                }
+            } catch (error) {
+                console.error('Erro ao buscar versão do arquivo externo:', error);
+            }
+            */
+        }
 
         // --- SISTEMA DE THEMA (DARK/LIGHT MODE) ---
         function setupTheme() {
