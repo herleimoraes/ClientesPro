@@ -259,6 +259,9 @@
         <section id="view-list" class="view-section">
             <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
                 <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-light border rounded-circle" onclick="switchView('view-dashboard')">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
                     <h5 class="m-0 text-body fw-bold">Meus Clientes</h5>
                     <span class="badge bg-success rounded-pill px-2 py-1" id="clientCount">0</span>
                 </div>
@@ -440,6 +443,56 @@
             </div>
         </section>
 
+        <!-- VISUALIZAÇÃO: RELATÓRIOS -->
+        <section id="view-reports" class="view-section">
+            <h5 class="mb-4 mt-2 fw-bold text-body">Relatórios e Métricas</h5>
+            
+            <div class="row g-3 mb-4">
+                <div class="col-12">
+                    <div class="dash-card p-4 text-center">
+                        <h1 class="fw-bold text-success mb-0" style="font-size: 3rem;" id="repTotal">0</h1>
+                        <span class="text-muted small text-uppercase fw-bold">Total de Clientes</span>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <div class="dash-card p-4">
+                        <h6 class="fw-bold mb-4 text-body">Completude dos Cadastros</h6>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted fw-medium">Com CPF/CNPJ</small>
+                                <small class="text-body fw-bold" id="repDoc">0</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" id="repDocProg" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted fw-medium">Com E-mail</small>
+                                <small class="text-body fw-bold" id="repEmail">0</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-primary" id="repEmailProg" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted fw-medium">Com Endereço preenchido</small>
+                                <small class="text-body fw-bold" id="repAddress">0</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" id="repAddressProg" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- VISUALIZAÇÃO: CONFIGURAÇÕES -->
         <section id="view-settings" class="view-section">
             <h5 class="mb-4 mt-2 fw-bold text-body">Configurações</h5>
@@ -487,9 +540,9 @@
             <i class="bi bi-grid-fill"></i>
             <span>Dashboard</span>
         </button>
-        <button class="nav-item" id="nav-list" onclick="switchView('view-list')">
-            <i class="bi bi-people-fill"></i>
-            <span>Clientes</span>
+        <button class="nav-item" id="nav-reports" onclick="switchView('view-reports')">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span>Relatórios</span>
         </button>
         <button class="nav-item" id="nav-settings" onclick="switchView('view-settings')">
             <i class="bi bi-gear-fill"></i>
@@ -536,7 +589,7 @@
     <!-- Lógica do Aplicativo -->
     <script>
         // --- CONFIGURAÇÕES DO APP ---
-        const APP_VERSION = '1.2.3'; // Versão de recurso (Fallback)
+        const APP_VERSION = '1.1.0'; // Versão de recurso (Fallback)
 
         // --- ESTADO DA APLICAÇÃO ---
         let clients = JSON.parse(localStorage.getItem('app_clientes'));
@@ -662,12 +715,15 @@
 
             // Atualiza botões do menu inferior
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            if(viewId === 'view-dashboard') {
+            
+            // Lógica de menus ativos
+            if(viewId === 'view-dashboard' || viewId === 'view-list' || viewId === 'view-details') {
+                // A lista e os detalhes são subpáginas do Dashboard
                 document.getElementById('nav-dashboard').classList.add('active');
-                renderClients();
-            } else if(viewId === 'view-list' || viewId === 'view-details') {
-                document.getElementById('nav-list').classList.add('active');
-                if(viewId === 'view-list') renderClients();
+                if(viewId === 'view-list' || viewId === 'view-dashboard') renderClients();
+            } else if(viewId === 'view-reports') {
+                document.getElementById('nav-reports').classList.add('active');
+                renderReports();
             } else if(viewId === 'view-form') {
                 // Ao abrir formulário, não mantemos aba ativa no menu inferior
                 if(isNew) {
@@ -723,6 +779,26 @@
                 return (names[0][0] + names[names.length - 1][0]).toUpperCase();
             }
             return name.substring(0, 2).toUpperCase();
+        }
+
+        // --- RENDERIZAR RELATÓRIOS ---
+        function renderReports() {
+            const total = clients.length;
+            
+            // Calculando métricas de qualidade de cadastro
+            const withDoc = clients.filter(c => c.doc && c.doc.trim() !== '').length;
+            const withEmail = clients.filter(c => c.email && c.email.trim() !== '').length;
+            const withAddress = clients.filter(c => c.city && c.city.trim() !== '').length; // Usa 'city' para basear se preencheu o endereço
+
+            document.getElementById('repTotal').innerText = total;
+            document.getElementById('repDoc').innerText = withDoc;
+            document.getElementById('repEmail').innerText = withEmail;
+            document.getElementById('repAddress').innerText = withAddress;
+            
+            // Atualizando as barras de progresso
+            document.getElementById('repDocProg').style.width = total > 0 ? `${(withDoc/total)*100}%` : '0%';
+            document.getElementById('repEmailProg').style.width = total > 0 ? `${(withEmail/total)*100}%` : '0%';
+            document.getElementById('repAddressProg').style.width = total > 0 ? `${(withAddress/total)*100}%` : '0%';
         }
 
         // --- RENDERIZAR DADOS ---
