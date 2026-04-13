@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>App Cadastro de Clientes</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        /* Variáveis e Reset Mobile */
+        :root {
+            --app-bg: #f4f6f9;
+            --primary-color: #0d6efd;
+            --nav-height: 70px;
+        }
+
+        body {
+            background-color: var(--app-bg);
+            /* Evita pull-to-refresh indesejado em alguns browsers mobile */
+            overscroll-behavior-y: none; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Topbar / Header */
+        .app-header {
+            height: 60px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-header h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* Área de Conteúdo Principal */
+        .main-content {
+            margin-top: 60px; /* Altura do header */
+            margin-bottom: var(--nav-height); /* Altura do footer */
+            padding: 20px 15px;
+            overflow-y: auto;
+            height: calc(100vh - 60px - var(--nav-height));
+        }
+
+        /* Bottom Navigation (Estilo App Nativo) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 1030;
+            padding-bottom: env(safe-area-inset-bottom); /* Para iPhones modernos */
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            text-decoration: none;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            transition: 0.2s ease;
+        }
+
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-item span {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        /* Itens da Lista de Clientes (Cards) */
+        .client-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .client-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(13, 110, 253, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .client-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .client-info h6 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .client-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .client-actions .btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        /* Formulários maiores para mobile */
+        .form-control-lg {
+            border-radius: 10px;
+            font-size: 1rem;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+        
+        .form-control-lg:focus {
+            background-color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+        .btn-lg {
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+        }
+
+        /* Ocultar visualizações (SPA feel) */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Toast Container posicionado para não cobrir o nav inferior */
+        .toast-container {
+            bottom: calc(var(--nav-height) + 15px) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Fixo -->
+    <header class="app-header">
+        <h1>Gestão de Clientes</h1>
+    </header>
+
+    <!-- Área de Conteúdo -->
+    <main class="main-content container-fluid">
+        
+        <!-- VISUALIZAÇÃO: LISTA DE CLIENTES -->
+        <section id="view-list" class="view-section active">
+            <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                <h5 class="m-0 text-dark fw-bold">Meus Clientes</h5>
+                <span class="badge bg-primary rounded-pill px-3 py-2" id="clientCount">0</span>
+            </div>
+
+            <!-- Container da Lista -->
+            <div id="clientListContainer">
+                <!-- Os clientes serão inseridos aqui via JS -->
+            </div>
+
+            <!-- Estado Vazio (Empty State) -->
+            <div id="emptyState" class="text-center py-5 d-none">
+                <i class="bi bi-person-x text-muted" style="font-size: 4rem;"></i>
+                <h5 class="mt-3 text-muted">Nenhum cliente cadastrado</h5>
+                <p class="text-muted small mb-4">Toque em "Adicionar" para começar.</p>
+                <button class="btn btn-outline-primary rounded-pill px-4" onclick="switchView('view-form')">
+                    Adicionar Cliente
+                </button>
+            </div>
+        </section>
+
+        <!-- VISUALIZAÇÃO: FORMULÁRIO -->
+        <section id="view-form" class="view-section">
+            <h5 class="mb-4 mt-2 fw-bold text-dark" id="formTitle">Novo Cliente</h5>
+            
+            <form id="clientForm" class="bg-white p-4 rounded-4 shadow-sm">
+                <input type="hidden" id="clientId">
+                
+                <div class="mb-3">
+                    <label for="clientName" class="form-label text-muted small fw-bold">Nome Completo *</label>
+                    <input type="text" class="form-control form-control-lg" id="clientName" placeholder="Ex: João da Silva" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="clientPhone" class="form-label text-muted small fw-bold">Telefone/WhatsApp *</label>
+                    <input type="tel" class="form-control form-control-lg" id="clientPhone" placeholder="(00) 00000-0000" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="clientEmail" class="form-label text-muted small fw-bold">E-mail (opcional)</label>
+                    <input type="email" class="form-control form-control-lg" id="clientEmail" placeholder="joao@email.com">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3 shadow-sm" id="btnSave">
+                    <i class="bi bi-check-lg me-2"></i> Salvar Cliente
+                </button>
+                <button type="button" class="btn btn-light btn-lg w-100 text-secondary" onclick="switchView('view-list')">
+                    Cancelar
+                </button>
+            </form>
+        </section>
+
+        <!-- VISUALIZAÇÃO: CONFIGURAÇÕES -->
+        <section id="view-settings" class="view-section">
+            <h5 class="mb-4 mt-2 fw-bold text-dark">Configurações</h5>
+            
+            <div class="bg-white p-4 rounded-4 shadow-sm">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                        <div>
+                            <h6 class="mb-0 fw-bold">Notificações</h6>
+                            <small class="text-muted">Ativar alertas visuais</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input fs-5" type="checkbox" role="switch" checked>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                        <div>
+                            <h6 class="mb-0 fw-bold">Modo Escuro</h6>
+                            <small class="text-muted">Tema do aplicativo</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input fs-5" type="checkbox" role="switch" disabled>
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider my-2"></li>
+                    <li class="list-group-item border-0 px-0 mt-3">
+                        <button class="btn btn-outline-danger w-100 rounded-3 py-2 fw-medium" onclick="clearAllData()">
+                            <i class="bi bi-trash3-fill me-2"></i> Apagar Todos os Dados
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="text-center mt-4">
+                <small class="text-muted">Versão 1.0.0</small>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Menu Inferior (Bottom Navigation) -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="nav-list" onclick="switchView('view-list')">
+            <i class="bi bi-people-fill"></i>
+            <span>Clientes</span>
+        </button>
+        <button class="nav-item" id="nav-form" onclick="switchView('view-form', true)">
+            <i class="bi bi-person-plus-fill"></i>
+            <span>Adicionar</span>
+        </button>
+        <button class="nav-item" id="nav-settings" onclick="switchView('view-settings')">
+            <i class="bi bi-gear-fill"></i>
+            <span>Config</span>
+        </button>
+    </nav>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered px-3">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-exclamation-triangle-fill text-danger mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="fw-bold mb-3">Excluir Cliente?</h5>
+                    <p class="text-muted mb-4">Esta ação não poderá ser desfeita. Tem certeza que deseja remover este cliente?</p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 btn-lg rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger w-50 btn-lg rounded-3" id="confirmDeleteBtn">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação (Feedback de ações) -->
+    <div class="toast-container position-fixed p-3">
+        <div id="actionToast" class="toast align-items-center text-white bg-success border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-medium" id="toastMessage">
+                    Ação realizada com sucesso!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Lógica do Aplicativo -->
+    <script>
+        // --- ESTADO DA APLICAÇÃO ---
+        // Recupera clientes do LocalStorage ou inicia um array vazio
+        let clients = JSON.parse(localStorage.getItem('app_clientes')) || [];
+        let clientToDeleteId = null;
+
+        // Referências do DOM
+        const form = document.getElementById('clientForm');
+        const listContainer = document.getElementById('clientListContainer');
+        const emptyState = document.getElementById('emptyState');
+        const clientCount = document.getElementById('clientCount');
+        const phoneInput = document.getElementById('clientPhone');
+        
+        // Instâncias do Bootstrap
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const actionToast = new bootstrap.Toast(document.getElementById('actionToast'));
+
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderClients();
+            setupPhoneMask();
+        });
+
+        // --- NAVEGAÇÃO SPA (Telas) ---
+        function switchView(viewId, isNew = false) {
+            // Oculta todas as telas
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Mostra a tela desejada
+            document.getElementById(viewId).classList.add('active');
+
+            // Atualiza botões do menu inferior
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(viewId === 'view-list') {
+                document.getElementById('nav-list').classList.add('active');
+                renderClients();
+            } else if(viewId === 'view-form') {
+                document.getElementById('nav-form').classList.add('active');
+                if(isNew) {
+                    resetForm();
+                    document.getElementById('formTitle').innerText = 'Novo Cliente';
+                }
+            } else if(viewId === 'view-settings') {
+                document.getElementById('nav-settings').classList.add('active');
+            }
+            window.scrollTo(0, 0); // Volta pro topo
+        }
+
+        // --- MÁSCARA DE TELEFONE (Mobile Friendly) ---
+        function setupPhoneMask() {
+            phoneInput.addEventListener('input', function (e) {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+            });
+        }
+
+        // --- GERAR INICIAIS PARA AVATAR ---
+        function getInitials(name) {
+            const names = name.trim().split(' ');
+            if (names.length >= 2) {
+                return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+            }
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        // --- RENDERIZAR LISTA ---
+        function renderClients() {
+            listContainer.innerHTML = '';
+            clientCount.innerText = clients.length;
+
+            if (clients.length === 0) {
+                emptyState.classList.remove('d-none');
+                return;
+            } else {
+                emptyState.classList.add('d-none');
+            }
+
+            // Ordena alfabeticamente
+            const sortedClients = [...clients].sort((a, b) => a.name.localeCompare(b.name));
+
+            sortedClients.forEach(client => {
+                const card = document.createElement('div');
+                card.className = 'client-card';
+                card.innerHTML = `
+                    <div class="client-avatar">
+                        ${getInitials(client.name)}
+                    </div>
+                    <div class="client-info">
+                        <h6>${client.name}</h6>
+                        <p><i class="bi bi-telephone text-muted me-1"></i>${client.phone}</p>
+                    </div>
+                    <div class="client-actions dropdown">
+                        <button class="btn btn-light btn-sm text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                            <li>
+                                <a class="dropdown-item py-2" href="#" onclick="editClient('${client.id}')">
+                                    <i class="bi bi-pencil me-2 text-primary"></i> Editar
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger" href="#" onclick="prepareDelete('${client.id}')">
+                                    <i class="bi bi-trash me-2"></i> Excluir
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // --- SALVAR/ATUALIZAR CLIENTE ---
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById('clientId').value;
+            const name = document.getElementById('clientName').value;
+            const phone = document.getElementById('clientPhone').value;
+            const email = document.getElementById('clientEmail').value;
+
+            if(id) {
+                // Atualizar existente
+                const index = clients.findIndex(c => c.id === id);
+                if(index !== -1) {
+                    clients[index] = { id, name, phone, email };
+                    showToast('Cliente atualizado com sucesso!', 'bg-success');
+                }
+            } else {
+                // Criar novo
+                const newClient = {
+                    id: Date.now().toString(), // ID simples baseado no timestamp
+                    name,
+                    phone,
+                    email
+                };
+                clients.push(newClient);
+                showToast('Cliente cadastrado com sucesso!', 'bg-success');
+            }
+
+            saveData();
+            switchView('view-list');
+        });
+
+        // --- EDITAR CLIENTE ---
+        function editClient(id) {
+            const client = clients.find(c => c.id === id);
+            if(client) {
+                document.getElementById('clientId').value = client.id;
+                document.getElementById('clientName').value = client.name;
+                document.getElementById('clientPhone').value = client.phone;
+                document.getElementById('clientEmail').value = client.email || '';
+                
+                document.getElementById('formTitle').innerText = 'Editar Cliente';
+                switchView('view-form');
+            }
+        }
+
+        // --- EXCLUIR CLIENTE ---
+        function prepareDelete(id) {
+            clientToDeleteId = id;
+            deleteModal.show();
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            if(clientToDeleteId) {
+                clients = clients.filter(c => c.id !== clientToDeleteId);
+                saveData();
+                renderClients();
+                deleteModal.hide();
+                showToast('Cliente removido.', 'bg-danger');
+                clientToDeleteId = null;
+            }
+        });
+
+        // --- UTILITÁRIOS ---
+        function resetForm() {
+            form.reset();
+            document.getElementById('clientId').value = '';
+        }
+
+        function saveData() {
+            localStorage.setItem('app_clientes', JSON.stringify(clients));
+        }
+
+        function showToast(message, colorClass) {
+            const toastEl = document.getElementById('actionToast');
+            document.getElementById('toastMessage').innerText = message;
+            
+            toastEl.classList.remove('bg-success', 'bg-danger', 'bg-primary');
+            toastEl.classList.add(colorClass);
+            
+            actionToast.show();
+        }
+
+        // --- APAGAR TODOS OS DADOS (CONFIGURAÇÕES) ---
+        function clearAllData() {
+            if(confirm('Tem a certeza que deseja apagar TODOS os clientes? Esta ação é irreversível!')) {
+                clients = [];
+                saveData();
+                showToast('Todos os dados foram apagados.', 'bg-danger');
+                switchView('view-list');
+            }
+        }
+
+    </script>
+</body>
+</html>
