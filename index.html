@@ -313,7 +313,10 @@
             </div>
             
             <form id="clientForm" class="bg-body p-4 rounded-4 shadow-sm">
+                <!-- Campos invisíveis atualizados -->
                 <input type="hidden" id="clientId">
+                <input type="hidden" id="clientCode">
+                <input type="hidden" id="clientCreatedAt">
                 
                 <!-- SEÇÃO 1: DADOS PRINCIPAIS -->
                 <h6 class="text-success fw-bold mb-3 border-bottom pb-2">Dados Principais</h6>
@@ -420,10 +423,16 @@
             </div>
 
             <div class="bg-body p-4 rounded-4 shadow-sm mb-3 text-center">
-                <div class="client-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;" id="detailAvatar">
+                <div class="client-avatar mx-auto mb-2" style="width: 80px; height: 80px; font-size: 2rem;" id="detailAvatar">
                     --
                 </div>
                 <h4 class="fw-bold mb-1 text-body" id="detailName">Nome do Cliente</h4>
+                
+                <!-- NOVO: Código Único do Cliente -->
+                <div class="mb-2">
+                    <span class="badge bg-secondary rounded-pill" id="detailCode">CLI-0000</span>
+                </div>
+
                 <p class="text-muted mb-3" id="detailDoc">CPF/CNPJ</p>
                 <button class="btn btn-outline-success btn-sm rounded-pill px-4" id="btnEditDetail">
                     <i class="bi bi-pencil me-1"></i> Editar
@@ -449,6 +458,12 @@
                 <div>
                     <small class="text-muted fw-bold d-block">Observações</small>
                     <span id="detailNotes" class="text-body">--</span>
+                </div>
+
+                <!-- NOVO: Datas de Cadastro e Modificação -->
+                <div class="mt-4 pt-3 border-top text-center">
+                    <small class="text-muted d-block" id="detailCreated">Cadastrado em: --</small>
+                    <small class="text-muted d-block" id="detailUpdated">Última alteração: --</small>
                 </div>
             </div>
         </section>
@@ -511,11 +526,11 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3 bg-transparent">
                         <div>
-                            <h6 class="mb-0 fw-bold text-body">Notificações</h6>
-                            <small class="text-muted">Ativar alertas visuais</small>
+                            <h6 class="mb-0 fw-bold text-body">Sincronizar Google Sheets</h6>
+                            <small class="text-muted">Enviar dados automaticamente</small>
                         </div>
                         <div class="form-check form-switch">
-                            <input class="form-check-input fs-5" type="checkbox" role="switch" checked>
+                            <input class="form-check-input fs-5" type="checkbox" role="switch" id="syncToggle" checked>
                         </div>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3 bg-transparent">
@@ -530,7 +545,7 @@
                     <li><hr class="dropdown-divider my-2 border-secondary-subtle"></li>
                     <li class="list-group-item border-0 px-0 mt-3 bg-transparent">
                         <button class="btn btn-outline-danger w-100 rounded-3 py-2 fw-medium" onclick="clearAllData()">
-                            <i class="bi bi-trash3-fill me-2"></i> Apagar Todos os Dados
+                            <i class="bi bi-trash3-fill me-2"></i> Apagar Todos os Dados Locais
                         </button>
                     </li>
                 </ul>
@@ -598,52 +613,29 @@
 
     <!-- Lógica do Aplicativo -->
     <script>
-        // --- CONFIGURAÇÕES DO APP ---
-        const APP_VERSION = '1.1.0'; // Versão de recurso (Fallback)
+        // --- CONFIGURAÇÕES DO APP & GOOGLE SHEETS ---
+        const APP_VERSION = '1.3.0';
+        
+        // PASSO 5 DA EXPLICAÇÃO: COLE AQUI A URL GERADA NO GOOGLE APPS SCRIPT
+        const GOOGLE_SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxpWmkcYd9-sz-PIai4-ZphheqOXADN9VZj1AtB3Cqu2ya7iJ8ylymAa2rABtkFignNpw/exec'; 
 
         // --- ESTADO DA APLICAÇÃO ---
         let clients = JSON.parse(localStorage.getItem('app_clientes'));
         
         if (!clients || clients.length === 0) {
+            const dataAtual = new Date().toISOString();
             clients = [
                 {
                     id: Date.now().toString() + '1',
+                    code: 'CLI-A1B2',
+                    createdAt: dataAtual,
+                    updatedAt: dataAtual,
                     name: 'Ana Carolina Silva',
                     phone: '(11) 98765-4321',
                     email: 'ana.silva@email.com',
                     doc: '123.456.789-00',
-                    cep: '01310-100',
-                    street: 'Av. Paulista',
-                    number: '1000',
-                    complement: 'Apto 54',
-                    neighborhood: 'Bela Vista',
-                    city: 'São Paulo',
-                    state: 'SP',
+                    cep: '01310-100', street: 'Av. Paulista', number: '1000', complement: 'Apto 54', neighborhood: 'Bela Vista', city: 'São Paulo', state: 'SP',
                     notes: 'Cliente VIP desde 2025.'
-                },
-                {
-                    id: Date.now().toString() + '2',
-                    name: 'Tech Solutions LTDA',
-                    phone: '(31) 3222-4444',
-                    email: 'contato@techsolutions.com.br',
-                    doc: '12.345.678/0001-90',
-                    cep: '38400-000',
-                    street: 'Rua da Inovação',
-                    number: '50',
-                    complement: 'Sala 101',
-                    neighborhood: 'Centro',
-                    city: 'Uberlândia',
-                    state: 'MG',
-                    notes: 'Faturamento para o dia 15.'
-                },
-                {
-                    id: Date.now().toString() + '3',
-                    name: 'João Pedro Oliveira',
-                    phone: '(21) 97777-8888',
-                    email: '',
-                    doc: '987.654.321-99',
-                    cep: '', street: '', number: '', complement: '', neighborhood: '', city: '', state: '',
-                    notes: 'Prefere contato via WhatsApp.'
                 }
             ];
             localStorage.setItem('app_clientes', JSON.stringify(clients));
@@ -658,7 +650,7 @@
         const clientCount = document.getElementById('clientCount');
         const dashTotalClients = document.getElementById('dashTotalClients');
         const phoneInput = document.getElementById('clientPhone');
-        const cepInput = document.getElementById('clientCep'); // Novo campo de CEP
+        const cepInput = document.getElementById('clientCep');
         const darkModeToggle = document.getElementById('darkModeToggle');
         
         // Instâncias do Bootstrap
@@ -670,28 +662,22 @@
             renderClients();
             setupPhoneMask();
             setupDocMask();
-            setupCepMask(); // Inicializa a máscara do CEP
+            setupCepMask();
             setupTheme();
-            loadAppVersion(); // Chama a função para carregar a versão dinâmica
+            loadAppVersion();
         });
 
         // --- LÓGICA DE VERSÃO DINÂMICA ---
         async function loadAppVersion() {
             const versionDisplay = document.getElementById('appVersionDisplay');
-            
             try {
-                // Tenta buscar a versão do ficheiro version.json (ideal para GitHub Pages/Actions)
                 const response = await fetch('./version.json');
                 if (response.ok) {
                     const data = await response.json();
                     versionDisplay.innerText = `Versão ${data.version}`;
-                    return; // Sai da função se der certo
+                    return;
                 }
-            } catch (error) {
-                console.warn('Ficheiro version.json não encontrado ou erro na requisição. A utilizar a versão local de recurso.', error);
-            }
-
-            // Fallback: Usa a constante local se o ficheiro falhar (ex: a testar localmente sem servidor)
+            } catch (error) {}
             versionDisplay.innerText = `Versão ${APP_VERSION}`;
         }
 
@@ -716,26 +702,17 @@
 
         // --- NAVEGAÇÃO SPA (Telas) ---
         function switchView(viewId, isNew = false) {
-            // Oculta todas as telas
-            document.querySelectorAll('.view-section').forEach(el => {
-                el.classList.remove('active');
-            });
-            // Mostra a tela desejada
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-
-            // Atualiza botões do menu inferior
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
-            // Lógica de menus ativos
             if(viewId === 'view-dashboard' || viewId === 'view-list' || viewId === 'view-details') {
-                // A lista e os detalhes são subpáginas do Dashboard
                 document.getElementById('nav-dashboard').classList.add('active');
                 if(viewId === 'view-list' || viewId === 'view-dashboard') renderClients();
             } else if(viewId === 'view-reports') {
                 document.getElementById('nav-reports').classList.add('active');
                 renderReports();
             } else if(viewId === 'view-form') {
-                // Ao abrir formulário, não mantemos aba ativa no menu inferior
                 if(isNew) {
                     resetForm();
                     document.getElementById('formTitle').innerText = 'Novo Cliente';
@@ -743,10 +720,10 @@
             } else if(viewId === 'view-settings') {
                 document.getElementById('nav-settings').classList.add('active');
             }
-            window.scrollTo(0, 0); // Volta pro topo
+            window.scrollTo(0, 0);
         }
 
-        // --- MÁSCARA DE TELEFONE E DOCUMENTO (Mobile Friendly) ---
+        // --- MÁSCARAS ---
         function setupPhoneMask() {
             phoneInput.addEventListener('input', function (e) {
                 let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
@@ -759,15 +736,10 @@
             docInput.addEventListener('input', function (e) {
                 let v = e.target.value.replace(/\D/g, '');
                 if (v.length <= 11) {
-                    v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                    v = v.replace(/(\d{3})(\d)/, '$1.$2');
-                    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
                 } else {
                     v = v.substring(0, 14);
-                    v = v.replace(/^(\d{2})(\d)/, '$1.$2');
-                    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-                    v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
-                    v = v.replace(/(\d{4})(\d)/, '$1-$2');
+                    v = v.replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
                 }
                 e.target.value = v;
             });
@@ -782,30 +754,36 @@
             });
         }
 
-        // --- GERAR INICIAIS PARA AVATAR ---
+        // --- UTILITÁRIOS ---
         function getInitials(name) {
             const names = name.trim().split(' ');
-            if (names.length >= 2) {
-                return (names[0][0] + names[names.length - 1][0]).toUpperCase();
-            }
+            if (names.length >= 2) return (names[0][0] + names[names.length - 1][0]).toUpperCase();
             return name.substring(0, 2).toUpperCase();
+        }
+
+        function generateUniqueCode() {
+            // Gera um código do tipo CLI-A1B2C3
+            return 'CLI-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function formatDateBR(isoString) {
+            if (!isoString) return '--';
+            const data = new Date(isoString);
+            return data.toLocaleDateString('pt-BR') + ' às ' + data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
         }
 
         // --- RENDERIZAR RELATÓRIOS ---
         function renderReports() {
             const total = clients.length;
-            
-            // Calculando métricas de qualidade de cadastro
             const withDoc = clients.filter(c => c.doc && c.doc.trim() !== '').length;
             const withEmail = clients.filter(c => c.email && c.email.trim() !== '').length;
-            const withAddress = clients.filter(c => c.city && c.city.trim() !== '').length; // Usa 'city' para basear se preencheu o endereço
+            const withAddress = clients.filter(c => c.city && c.city.trim() !== '').length;
 
             document.getElementById('repTotal').innerText = total;
             document.getElementById('repDoc').innerText = withDoc;
             document.getElementById('repEmail').innerText = withEmail;
             document.getElementById('repAddress').innerText = withAddress;
             
-            // Atualizando as barras de progresso
             document.getElementById('repDocProg').style.width = total > 0 ? `${(withDoc/total)*100}%` : '0%';
             document.getElementById('repEmailProg').style.width = total > 0 ? `${(withEmail/total)*100}%` : '0%';
             document.getElementById('repAddressProg').style.width = total > 0 ? `${(withAddress/total)*100}%` : '0%';
@@ -815,50 +793,29 @@
         function renderClients() {
             listContainer.innerHTML = '';
             
-            // Coleta do campo de busca
             const searchInput = document.getElementById('searchInput');
             const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-            const searchNumbers = searchTerm.replace(/\D/g, ''); // Extrai apenas números da busca
+            const searchNumbers = searchTerm.replace(/\D/g, '');
 
-            // Filtragem
             const filteredClients = clients.filter(c => {
                 if (!searchTerm) return true;
-                
                 const nameMatch = c.name.toLowerCase().includes(searchTerm);
-                
-                // Apenas busca por telefone se existirem números na pesquisa
                 const phoneMatch = searchNumbers && c.phone && c.phone.replace(/\D/g, '').includes(searchNumbers);
-                
-                // Apenas busca por documento se existirem números na pesquisa
                 const docMatch = searchNumbers && c.doc && c.doc.replace(/\D/g, '').includes(searchNumbers);
+                // Permite busca também pelo Código Único
+                const codeMatch = c.code && c.code.toLowerCase().includes(searchTerm);
                 
-                return nameMatch || phoneMatch || docMatch;
+                return nameMatch || phoneMatch || docMatch || codeMatch;
             });
 
-            const totalFiltered = filteredClients.length;
-            
-            // Atualiza contadores
-            clientCount.innerText = totalFiltered;
-            dashTotalClients.innerText = clients.length; // O Dashboard sempre mostra o total geral
+            clientCount.innerText = filteredClients.length;
+            dashTotalClients.innerText = clients.length;
 
-            if (totalFiltered === 0) {
+            if (filteredClients.length === 0) {
                 if (searchTerm !== '') {
-                    // Estado Vazio para busca sem resultados
-                    emptyState.innerHTML = `
-                        <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
-                        <h6 class="mt-3 text-muted">Nenhum resultado encontrado</h6>
-                        <p class="text-muted small">Tente buscar com outros termos.</p>
-                    `;
+                    emptyState.innerHTML = `<i class="bi bi-search text-muted" style="font-size: 3rem;"></i><h6 class="mt-3 text-muted">Nenhum resultado encontrado</h6>`;
                 } else {
-                    // Estado Vazio padrão (sem clientes)
-                    emptyState.innerHTML = `
-                        <i class="bi bi-person-x text-muted" style="font-size: 4rem;"></i>
-                        <h5 class="mt-3 text-muted">Nenhum cliente cadastrado</h5>
-                        <p class="text-muted small mb-4">Toque em "Adicionar" para começar.</p>
-                        <button class="btn btn-outline-success rounded-pill px-4" onclick="switchView('view-form', true)">
-                            <i class="bi bi-person-plus-fill me-2"></i>Adicionar Cliente
-                        </button>
-                    `;
+                    emptyState.innerHTML = `<i class="bi bi-person-x text-muted" style="font-size: 4rem;"></i><h5 class="mt-3 text-muted">Nenhum cliente cadastrado</h5><button class="btn btn-outline-success rounded-pill px-4 mt-3" onclick="switchView('view-form', true)"><i class="bi bi-person-plus-fill me-2"></i>Adicionar Cliente</button>`;
                 }
                 emptyState.classList.remove('d-none');
                 return;
@@ -866,38 +823,26 @@
                 emptyState.classList.add('d-none');
             }
 
-            // Ordena alfabeticamente
             const sortedClients = [...filteredClients].sort((a, b) => a.name.localeCompare(b.name));
 
             sortedClients.forEach(client => {
                 const card = document.createElement('div');
                 card.className = 'client-card text-body';
-                card.onclick = () => viewClient(client.id); // Adiciona evento de clique no card
+                card.onclick = () => viewClient(client.id);
                 card.innerHTML = `
-                    <div class="client-avatar">
-                        ${getInitials(client.name)}
-                    </div>
+                    <div class="client-avatar">${getInitials(client.name)}</div>
                     <div class="client-info">
-                        <h6>${client.name}</h6>
+                        <h6>${client.name} <span class="badge bg-light text-secondary border ms-1" style="font-size: 0.65rem;">${client.code || ''}</span></h6>
                         <p class="mb-1"><i class="bi bi-telephone text-muted me-1"></i>${client.phone}</p>
-                        ${client.doc ? `<p class="mb-0 text-muted" style="font-size: 0.75rem;"><i class="bi bi-card-heading me-1"></i>${client.doc}</p>` : ''}
                     </div>
                     <div class="client-actions dropdown">
-                        <button class="btn btn-light btn-sm text-secondary bg-transparent border-0" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation()">
+                        <button class="btn btn-light btn-sm text-secondary bg-transparent border-0" data-bs-toggle="dropdown" onclick="event.stopPropagation()">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow border border-secondary-subtle" onclick="event.stopPropagation()">
-                            <li>
-                                <a class="dropdown-item py-2" href="#" onclick="event.preventDefault(); editClient('${client.id}')">
-                                    <i class="bi bi-pencil me-2 text-success"></i> Editar
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item py-2" href="#" onclick="event.preventDefault(); editClient('${client.id}')"><i class="bi bi-pencil me-2 text-success"></i> Editar</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item py-2 text-danger" href="#" onclick="event.preventDefault(); prepareDelete('${client.id}')">
-                                    <i class="bi bi-trash me-2"></i> Excluir
-                                </a>
-                            </li>
+                            <li><a class="dropdown-item py-2 text-danger" href="#" onclick="event.preventDefault(); prepareDelete('${client.id}')"><i class="bi bi-trash me-2"></i> Excluir</a></li>
                         </ul>
                     </div>
                 `;
@@ -911,11 +856,11 @@
             if(client) {
                 document.getElementById('detailAvatar').innerText = getInitials(client.name);
                 document.getElementById('detailName').innerText = client.name;
+                document.getElementById('detailCode').innerText = client.code || 'S/ CÓDIGO';
                 document.getElementById('detailDoc').innerText = client.doc || 'Nenhum documento registado';
                 document.getElementById('detailPhone').innerText = client.phone || '--';
                 document.getElementById('detailEmail').innerText = client.email || '--';
 
-                // Formatar endereço
                 let addressParts = [];
                 if (client.street) addressParts.push(client.street);
                 if (client.number) addressParts.push(client.number);
@@ -927,6 +872,9 @@
                 
                 document.getElementById('detailAddress').innerText = addressParts.length > 0 ? addressParts.join(', ') : 'Nenhum endereço registado.';
                 document.getElementById('detailNotes').innerText = client.notes || 'Nenhuma observação.';
+
+                document.getElementById('detailCreated').innerText = `Cadastrado em: ${formatDateBR(client.createdAt)}`;
+                document.getElementById('detailUpdated').innerText = `Última alteração: ${formatDateBR(client.updatedAt)}`;
 
                 document.getElementById('btnEditDetail').onclick = () => editClient(id);
 
@@ -943,8 +891,6 @@
             const phone = document.getElementById('clientPhone').value;
             const email = document.getElementById('clientEmail').value;
             const doc = document.getElementById('clientDoc').value;
-            
-            // Novos campos de endereço completos
             const cep = document.getElementById('clientCep').value;
             const street = document.getElementById('clientStreet').value;
             const number = document.getElementById('clientNumber').value;
@@ -952,39 +898,79 @@
             const neighborhood = document.getElementById('clientNeighborhood').value;
             const city = document.getElementById('clientCity').value;
             const state = document.getElementById('clientState').value;
-            
             const notes = document.getElementById('clientNotes').value;
+            
+            const now = new Date().toISOString();
+            let savedClient = null;
 
             if(id) {
+                // Modo Edição
                 const index = clients.findIndex(c => c.id === id);
                 if(index !== -1) {
-                    clients[index] = { id, name, phone, email, doc, cep, street, number, complement, neighborhood, city, state, notes };
+                    const existingCode = document.getElementById('clientCode').value;
+                    const existingCreatedAt = document.getElementById('clientCreatedAt').value;
+                    
+                    clients[index] = { 
+                        id, code: existingCode, createdAt: existingCreatedAt, updatedAt: now, 
+                        name, phone, email, doc, cep, street, number, complement, neighborhood, city, state, notes 
+                    };
+                    savedClient = clients[index];
                     showToast('Cliente atualizado com sucesso!', 'bg-success');
                 }
             } else {
-                const newClient = {
+                // Modo Criação
+                savedClient = {
                     id: Date.now().toString(),
+                    code: generateUniqueCode(),
+                    createdAt: now,
+                    updatedAt: now,
                     name, phone, email, doc, cep, street, number, complement, neighborhood, city, state, notes
                 };
-                clients.push(newClient);
+                clients.push(savedClient);
                 showToast('Cliente cadastrado com sucesso!', 'bg-success');
             }
 
             saveData();
+            
+            // Envia para o Google Sheets (se habilitado e configurado)
+            syncToGoogleSheets(savedClient);
+
             switchView('view-list');
         });
+
+        // --- INTEGRAÇÃO GOOGLE SHEETS ---
+        function syncToGoogleSheets(clientData) {
+            const isSyncEnabled = document.getElementById('syncToggle').checked;
+            
+            if (!GOOGLE_SHEETS_WEBHOOK_URL || !isSyncEnabled) {
+                return; // Se não tiver URL ou estiver desligado nas configurações, não faz nada
+            }
+
+            // Usamos 'no-cors' para evitar bloqueios de segurança do navegador ao enviar para o Apps Script
+            fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(clientData)
+            })
+            .then(() => console.log('Dados enviados para a fila do Google Sheets.'))
+            .catch(error => console.error('Erro ao sincronizar com Planilha:', error));
+        }
 
         // --- EDITAR CLIENTE ---
         function editClient(id) {
             const client = clients.find(c => c.id === id);
             if(client) {
                 document.getElementById('clientId').value = client.id;
+                document.getElementById('clientCode').value = client.code || '';
+                document.getElementById('clientCreatedAt').value = client.createdAt || '';
+
                 document.getElementById('clientName').value = client.name;
                 document.getElementById('clientPhone').value = client.phone;
                 document.getElementById('clientEmail').value = client.email || '';
                 document.getElementById('clientDoc').value = client.doc || '';
-                
-                // Povoar campos de endereço
                 document.getElementById('clientCep').value = client.cep || '';
                 document.getElementById('clientStreet').value = client.street || '';
                 document.getElementById('clientNumber').value = client.number || '';
@@ -992,7 +978,6 @@
                 document.getElementById('clientNeighborhood').value = client.neighborhood || '';
                 document.getElementById('clientCity').value = client.city || '';
                 document.getElementById('clientState').value = client.state || '';
-                
                 document.getElementById('clientNotes').value = client.notes || '';
                 
                 document.getElementById('formTitle').innerText = 'Editar Cliente';
@@ -1021,6 +1006,8 @@
         function resetForm() {
             form.reset();
             document.getElementById('clientId').value = '';
+            document.getElementById('clientCode').value = '';
+            document.getElementById('clientCreatedAt').value = '';
         }
 
         function saveData() {
@@ -1030,19 +1017,16 @@
         function showToast(message, colorClass) {
             const toastEl = document.getElementById('actionToast');
             document.getElementById('toastMessage').innerText = message;
-            
             toastEl.classList.remove('bg-success', 'bg-danger', 'bg-primary');
             toastEl.classList.add(colorClass);
-            
             actionToast.show();
         }
 
-        // --- APAGAR TODOS OS DADOS (CONFIGURAÇÕES) ---
         function clearAllData() {
-            if(confirm('Tem a certeza que deseja apagar TODOS os clientes? Esta ação é irreversível!')) {
+            if(confirm('Tem a certeza que deseja apagar TODOS os clientes localmente? Esta ação é irreversível!')) {
                 clients = [];
                 saveData();
-                showToast('Todos os dados foram apagados.', 'bg-danger');
+                showToast('Todos os dados locais foram apagados.', 'bg-danger');
                 switchView('view-dashboard');
             }
         }
