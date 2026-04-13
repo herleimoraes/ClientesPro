@@ -1272,18 +1272,13 @@
             }
             if (!isSyncEnabled) return;
 
-            updateSyncUI('Sincronizando...', 'bg-primary', 'bi-arrow-repeat spinner-border spinner-border-sm text-light');
+            updateSyncUI('A sincronizar...', 'bg-primary', 'bi-arrow-repeat spinner-border spinner-border-sm text-light');
 
             try {
-                // Ao usar mode: 'no-cors' não podemos ler a resposta por segurança do navegador
-                // Mas garantimos que o envio de dados via POST (abaixo) funciona.
-                // O fetch GET não é bloqueado por CORS nativamente em script do google se for feito via script tag ou proxy
-                // O erro "Failed to fetch" no Google Apps Script geralmente ocorre por causa de CORS no cliente local (CORS blocking the read).
-                // Como não podemos modificar as permissões no seu navegador, a leitura aqui deve ser contornada e ser tolerante a falhas.
-                const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                });
+                // CORREÇÃO: Remoção dos "headers". 
+                // Enviar headers customizados obriga o browser a fazer uma requisição OPTIONS (CORS Preflight),
+                // o que é bloqueado pelo Google Apps Script. Uma requisição GET simples resolve isto.
+                const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL);
                 
                 if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
                 
@@ -1295,7 +1290,7 @@
                     if(document.getElementById('view-list').classList.contains('active')) renderClients();
                     if(document.getElementById('view-reports').classList.contains('active')) renderReports();
                 }
-                // Adicionando fusão de produtos caso o sheets envie
+                
                 if (data && data.products) {
                     smartMergeProducts(data.products);
                     saveData();
@@ -1307,9 +1302,9 @@
                 updateSyncUI('Conectado e Atualizado', 'bg-success', 'bi-cloud-check', nowIso);
                 
             } catch (error) {
-                console.warn('Sincronização de leitura bloqueada por CORS (Apenas a leitura falha. A escrita continua a funcionar).');
+                console.error('Erro na sincronização de leitura:', error);
                 const lastSync = localStorage.getItem('app_last_sync');
-                updateSyncUI('Escrita Ativa / Leitura Bloqueada', 'bg-warning text-dark', 'bi-cloud-minus', lastSync);
+                updateSyncUI('Erro de Ligação', 'bg-danger', 'bi-cloud-x', lastSync);
             }
         }
 
@@ -1330,7 +1325,8 @@
         function smartMergeProducts(remoteProducts) {
             remoteProducts.forEach(rp => {
                 if(!rp.id) return;
-                const localIndex = products.findIndex(lp => lc.id == rp.id);
+                // CORREÇÃO APLICADA AQUI: lp ao invés de lc
+                const localIndex = products.findIndex(lp => lp.id == rp.id);
                 if (localIndex === -1) {
                     products.push(rp);
                 } else {
