@@ -13,8 +13,8 @@
     <style>
         /* Variáveis e Reset Mobile */
         :root {
-            --app-bg: #f4f6f9;
-            --primary-color: #0d6efd;
+            --app-bg: #f4f9f5;
+            --primary-color: #198754;
             --nav-height: 70px;
         }
 
@@ -115,7 +115,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: rgba(13, 110, 253, 0.1);
+            background: rgba(25, 135, 84, 0.1);
             color: var(--primary-color);
             display: flex;
             align-items: center;
@@ -160,7 +160,7 @@
         
         .form-control-lg:focus {
             background-color: #fff;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+            box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
         }
 
         .btn-lg {
@@ -204,7 +204,7 @@
         <section id="view-list" class="view-section active">
             <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
                 <h5 class="m-0 text-dark fw-bold">Meus Clientes</h5>
-                <span class="badge bg-primary rounded-pill px-3 py-2" id="clientCount">0</span>
+                <span class="badge bg-success rounded-pill px-3 py-2" id="clientCount">0</span>
             </div>
 
             <!-- Container da Lista -->
@@ -217,8 +217,8 @@
                 <i class="bi bi-person-x text-muted" style="font-size: 4rem;"></i>
                 <h5 class="mt-3 text-muted">Nenhum cliente cadastrado</h5>
                 <p class="text-muted small mb-4">Toque em "Adicionar" para começar.</p>
-                <button class="btn btn-outline-primary rounded-pill px-4" onclick="switchView('view-form')">
-                    Adicionar Cliente
+                <button class="btn btn-outline-success rounded-pill px-4" onclick="switchView('view-form')">
+                    <i class="bi bi-person-plus-fill me-2"></i>Adicionar Cliente
                 </button>
             </div>
         </section>
@@ -239,17 +239,32 @@
                     <label for="clientPhone" class="form-label text-muted small fw-bold">Telefone/WhatsApp *</label>
                     <input type="tel" class="form-control form-control-lg" id="clientPhone" placeholder="(00) 00000-0000" required>
                 </div>
+
+                <div class="mb-3">
+                    <label for="clientDoc" class="form-label text-muted small fw-bold">CPF / CNPJ (opcional)</label>
+                    <input type="text" class="form-control form-control-lg" id="clientDoc" placeholder="000.000.000-00" maxlength="18">
+                </div>
                 
-                <div class="mb-4">
+                <div class="mb-3">
                     <label for="clientEmail" class="form-label text-muted small fw-bold">E-mail (opcional)</label>
                     <input type="email" class="form-control form-control-lg" id="clientEmail" placeholder="joao@email.com">
                 </div>
+
+                <div class="mb-3">
+                    <label for="clientAddress" class="form-label text-muted small fw-bold">Endereço (opcional)</label>
+                    <input type="text" class="form-control form-control-lg" id="clientAddress" placeholder="Rua, Número, Cidade">
+                </div>
+
+                <div class="mb-4">
+                    <label for="clientNotes" class="form-label text-muted small fw-bold">Observações (opcional)</label>
+                    <textarea class="form-control form-control-lg" id="clientNotes" rows="3" placeholder="Informações adicionais..."></textarea>
+                </div>
                 
-                <button type="submit" class="btn btn-primary btn-lg w-100 mb-3 shadow-sm" id="btnSave">
+                <button type="submit" class="btn btn-success btn-lg w-100 mb-3 shadow-sm" id="btnSave">
                     <i class="bi bi-check-lg me-2"></i> Salvar Cliente
                 </button>
                 <button type="button" class="btn btn-light btn-lg w-100 text-secondary" onclick="switchView('view-list')">
-                    Cancelar
+                    <i class="bi bi-x-lg me-2"></i> Cancelar
                 </button>
             </form>
         </section>
@@ -319,8 +334,12 @@
                     <h5 class="fw-bold mb-3">Excluir Cliente?</h5>
                     <p class="text-muted mb-4">Esta ação não poderá ser desfeita. Tem certeza que deseja remover este cliente?</p>
                     <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-light w-50 btn-lg rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-danger w-50 btn-lg rounded-3" id="confirmDeleteBtn">Excluir</button>
+                        <button type="button" class="btn btn-light w-50 btn-lg rounded-3" data-bs-dismiss="modal">
+                            <i class="bi bi-x-lg me-1"></i> Cancelar
+                        </button>
+                        <button type="button" class="btn btn-danger w-50 btn-lg rounded-3" id="confirmDeleteBtn">
+                            <i class="bi bi-trash-fill me-1"></i> Excluir
+                        </button>
                     </div>
                 </div>
             </div>
@@ -345,8 +364,43 @@
     <!-- Lógica do Aplicativo -->
     <script>
         // --- ESTADO DA APLICAÇÃO ---
-        // Recupera clientes do LocalStorage ou inicia um array vazio
-        let clients = JSON.parse(localStorage.getItem('app_clientes')) || [];
+        // Recupera clientes do LocalStorage ou carrega dados fictícios para teste inicial
+        let clients = JSON.parse(localStorage.getItem('app_clientes'));
+        
+        if (!clients || clients.length === 0) {
+            clients = [
+                {
+                    id: Date.now().toString() + '1',
+                    name: 'Ana Carolina Silva',
+                    phone: '(11) 98765-4321',
+                    email: 'ana.silva@email.com',
+                    doc: '123.456.789-00',
+                    address: 'Av. Paulista, 1000 - São Paulo, SP',
+                    notes: 'Cliente VIP desde 2025.'
+                },
+                {
+                    id: Date.now().toString() + '2',
+                    name: 'Tech Solutions LTDA',
+                    phone: '(31) 3222-4444',
+                    email: 'contato@techsolutions.com.br',
+                    doc: '12.345.678/0001-90',
+                    address: 'Rua da Inovação, 50 - Uberlândia, MG',
+                    notes: 'Faturamento para o dia 15.'
+                },
+                {
+                    id: Date.now().toString() + '3',
+                    name: 'João Pedro Oliveira',
+                    phone: '(21) 97777-8888',
+                    email: '',
+                    doc: '987.654.321-99',
+                    address: '',
+                    notes: 'Prefere contato via WhatsApp.'
+                }
+            ];
+            // Salva os dados fictícios no localStorage para simular o uso real
+            localStorage.setItem('app_clientes', JSON.stringify(clients));
+        }
+
         let clientToDeleteId = null;
 
         // Referências do DOM
@@ -364,6 +418,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderClients();
             setupPhoneMask();
+            setupDocMask();
         });
 
         // --- NAVEGAÇÃO SPA (Telas) ---
@@ -392,11 +447,35 @@
             window.scrollTo(0, 0); // Volta pro topo
         }
 
-        // --- MÁSCARA DE TELEFONE (Mobile Friendly) ---
+        // --- MÁSCARA DE TELEFONE E DOCUMENTO (Mobile Friendly) ---
         function setupPhoneMask() {
             phoneInput.addEventListener('input', function (e) {
                 let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
                 e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+            });
+        }
+
+        function setupDocMask() {
+            const docInput = document.getElementById('clientDoc');
+            docInput.addEventListener('input', function (e) {
+                // Remove tudo o que não é dígito
+                let v = e.target.value.replace(/\D/g, '');
+                
+                if (v.length <= 11) {
+                    // Máscara de CPF: 000.000.000-00
+                    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                    v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                } else {
+                    // Máscara de CNPJ: 00.000.000/0000-00
+                    v = v.substring(0, 14); // Limita a 14 números
+                    v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+                    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                    v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                    v = v.replace(/(\d{4})(\d)/, '$1-$2');
+                }
+                
+                e.target.value = v;
             });
         }
 
@@ -433,7 +512,8 @@
                     </div>
                     <div class="client-info">
                         <h6>${client.name}</h6>
-                        <p><i class="bi bi-telephone text-muted me-1"></i>${client.phone}</p>
+                        <p class="mb-1"><i class="bi bi-telephone text-muted me-1"></i>${client.phone}</p>
+                        ${client.doc ? `<p class="mb-0 text-muted" style="font-size: 0.75rem;"><i class="bi bi-card-heading me-1"></i>${client.doc}</p>` : ''}
                     </div>
                     <div class="client-actions dropdown">
                         <button class="btn btn-light btn-sm text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
@@ -442,7 +522,7 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                             <li>
                                 <a class="dropdown-item py-2" href="#" onclick="editClient('${client.id}')">
-                                    <i class="bi bi-pencil me-2 text-primary"></i> Editar
+                                    <i class="bi bi-pencil me-2 text-success"></i> Editar
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
@@ -466,12 +546,15 @@
             const name = document.getElementById('clientName').value;
             const phone = document.getElementById('clientPhone').value;
             const email = document.getElementById('clientEmail').value;
+            const doc = document.getElementById('clientDoc').value;
+            const address = document.getElementById('clientAddress').value;
+            const notes = document.getElementById('clientNotes').value;
 
             if(id) {
                 // Atualizar existente
                 const index = clients.findIndex(c => c.id === id);
                 if(index !== -1) {
-                    clients[index] = { id, name, phone, email };
+                    clients[index] = { id, name, phone, email, doc, address, notes };
                     showToast('Cliente atualizado com sucesso!', 'bg-success');
                 }
             } else {
@@ -480,7 +563,10 @@
                     id: Date.now().toString(), // ID simples baseado no timestamp
                     name,
                     phone,
-                    email
+                    email,
+                    doc,
+                    address,
+                    notes
                 };
                 clients.push(newClient);
                 showToast('Cliente cadastrado com sucesso!', 'bg-success');
@@ -498,6 +584,9 @@
                 document.getElementById('clientName').value = client.name;
                 document.getElementById('clientPhone').value = client.phone;
                 document.getElementById('clientEmail').value = client.email || '';
+                document.getElementById('clientDoc').value = client.doc || '';
+                document.getElementById('clientAddress').value = client.address || '';
+                document.getElementById('clientNotes').value = client.notes || '';
                 
                 document.getElementById('formTitle').innerText = 'Editar Cliente';
                 switchView('view-form');
